@@ -1,26 +1,68 @@
-import { Mail, MapPin, Phone, Send } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import api from '../services/api';
+import { motion } from 'framer-motion';
 
 export default function Contact() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
+  const [searchParams] = useSearchParams();
+  const productName = searchParams.get('product');
 
-  const onSubmit = (data) => {
-    console.log("Contact form submitted:", data);
-    alert("Thank you for contacting us! We'll be in touch shortly.");
+  useEffect(() => {
+    if (productName) {
+      setValue('subject', `Inquiry regarding ${productName}`);
+      setValue('message', `Hello,\n\nI am interested in learning more about the ${productName}. Please provide a quote and further details.\n\nThank you.`);
+    }
+  }, [productName, setValue]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    
+    try {
+      const response = await api.post('/contacts', data);
+
+      if (response.status === 200 || response.status === 201) {
+        setSubmitStatus('success');
+        reset();
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="bg-gray-900 text-white py-20 px-6 text-center">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="bg-gray-900 text-white pt-32 pb-20 px-6 text-center md:pt-40"
+      >
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Contact Us</h1>
         <p className="text-gray-400 max-w-2xl mx-auto">Get in touch with our team for inquiries, support, or partnership opportunities.</p>
-      </div>
+      </motion.div>
 
       <div className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-16">
         
         {/* Contact Info & Map */}
-        <div className="space-y-12">
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="space-y-12"
+        >
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Our Headquarters</h2>
             <div className="space-y-6">
@@ -40,8 +82,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900">Phone</h4>
-                  <p className="text-gray-600 mt-1">+1 (234) 567-890</p>
-                  <p className="text-gray-600">+1 (234) 567-891 (Support)</p>
+                  <p className="text-gray-600 mt-1">+91 98440 13768</p>
                 </div>
               </div>
               
@@ -51,8 +92,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900">Email</h4>
-                  <p className="text-gray-600 mt-1">info@bcrinnovations.com</p>
-                  <p className="text-gray-600">sales@bcrinnovations.com</p>
+                  <p className="text-gray-600 mt-1">bcrinnovations2026@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -61,7 +101,7 @@ export default function Contact() {
           {/* Google Maps Embed */}
           <div className="h-[300px] w-full rounded-2xl overflow-hidden shadow-md border border-gray-200">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.25280010992!2d-74.14448737213876!3d40.69763123336688!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2s!4v1693425316314!5m2!1sen!2s" 
+              src="https://maps.google.com/maps?q=Narendra%20Chambers,%20Rajajinagar,%20Bengaluru&t=&z=15&ie=UTF8&iwloc=&output=embed" 
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 
@@ -70,10 +110,16 @@ export default function Contact() {
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
-        </div>
+        </motion.div>
 
         {/* Email Inquiry Form */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100"
+        >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -119,11 +165,33 @@ export default function Contact() {
               ></textarea>
             </div>
 
-            <button type="submit" className="w-full py-4 bg-secondary hover:bg-secondary-dark text-white rounded-xl font-bold text-lg transition-colors shadow-lg flex items-center justify-center gap-2">
-              <Send className="w-5 h-5" /> Send Message
+            <button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="w-full py-4 bg-secondary hover:bg-secondary-dark text-white rounded-xl font-bold text-lg transition-colors shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> Sending...</>
+              ) : (
+                <><Send className="w-5 h-5" /> Send Message</>
+              )}
             </button>
+            
+            {submitStatus === 'success' && (
+              <div className="flex items-center gap-2 text-green-600 bg-green-50 p-4 rounded-xl border border-green-100">
+                <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <p>Thank you for contacting us! We'll be in touch shortly.</p>
+              </div>
+            )}
+            
+            {submitStatus === 'error' && (
+              <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-xl border border-red-100">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <p>Something went wrong. Please try again later.</p>
+              </div>
+            )}
           </form>
-        </div>
+        </motion.div>
 
       </div>
     </div>

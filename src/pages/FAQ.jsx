@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const faqs = [
   {
@@ -8,7 +9,7 @@ const faqs = [
   },
   {
     question: "How can I request a custom bulk order?",
-    answer: "You can request a custom bulk order by visiting the specific Product Details page and filling out the Inquiry Form, or by contacting our sales team directly at sales@bcrinnovations.com."
+    answer: "You can request a custom bulk order by visiting the specific Product Details page and filling out the Inquiry Form, or by contacting our sales team directly at bcrinnovations2026@gmail.com."
   },
   {
     question: "Are your products covered by a warranty?",
@@ -24,16 +25,24 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <div className="w-full bg-gray-50 min-h-screen py-20">
+    <div className="w-full bg-gray-50 min-h-screen pt-32 pb-20 md:pt-40">
       <div className="max-w-4xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">Frequently Asked Questions</h1>
           <p className="text-gray-600 text-lg">Find answers to common questions about our products and services.</p>
-        </div>
+        </motion.div>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <div 
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              viewport={{ once: true }}
               key={index} 
               className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${openIndex === index ? 'border-primary shadow-md' : 'border-gray-200 hover:border-gray-300'}`}
             >
@@ -54,7 +63,7 @@ export default function FAQ() {
               >
                 <p className="text-gray-600 leading-relaxed border-t border-gray-100 pt-4">{faq.answer}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

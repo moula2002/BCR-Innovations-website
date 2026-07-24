@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
-import logoUrl from '../assets/Logo.png';
+import logoUrl from '../../assets/Logo.png';
 
 export default function Footer() {
   return (
@@ -55,11 +55,10 @@ export default function Footer() {
             <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-secondary rounded-full"></span>
           </h3>
           <ul className="space-y-3">
-            <li><Link to="/products?category=manufacturing" className="hover:text-secondary transition-colors">Manufacturing</Link></li>
-            <li><Link to="/products?category=fabrication" className="hover:text-secondary transition-colors">Fabrication</Link></li>
-            <li><Link to="/products?category=refrigeration" className="hover:text-secondary transition-colors">Refrigeration</Link></li>
-            <li><Link to="/products?category=furnitures" className="hover:text-secondary transition-colors">Furnitures</Link></li>
-            <li><Link to="/products?category=clean-room" className="hover:text-secondary transition-colors">Clean Room Equipments</Link></li>
+            <li><Link to="/products?category=williams-display" className="hover:text-secondary transition-colors">Williams Display Counters</Link></li>
+            <li><Link to="/products?category=sln-kitchen" className="hover:text-secondary transition-colors">SLN Kitchen Equipment</Link></li>
+            <li><Link to="/products?category=sml-cleanroom" className="hover:text-secondary transition-colors">SML Clean Room Equipment</Link></li>
+            <li><Link to="/products?category=geebee-bakery" className="hover:text-secondary transition-colors">Gee Bee Bakery Equipment</Link></li>
           </ul>
         </div>
 
@@ -76,11 +75,11 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-3 text-sm">
               <Phone className="w-5 h-5 text-secondary shrink-0" />
-              <span>+1 (234) 567-890</span>
+              <span>+91 98440 13768</span>
             </li>
             <li className="flex items-center gap-3 text-sm">
               <Mail className="w-5 h-5 text-secondary shrink-0" />
-              <span>info@bcrinnovations.com</span>
+              <span>bcrinnovations2026@gmail.com</span>
             </li>
           </ul>
         </div>
