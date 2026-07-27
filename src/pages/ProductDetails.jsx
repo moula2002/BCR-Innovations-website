@@ -219,12 +219,7 @@ export default function ProductDetails() {
             <div className="mt-auto bg-white p-6 rounded-3xl border border-gray-100 shadow-lg shadow-gray-200/50 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
               
-              <div className="relative z-10 w-full sm:w-auto text-center sm:text-left">
-                <div className="text-sm text-gray-500 font-medium mb-1 uppercase tracking-wider">Pricing</div>
-                <div className="text-3xl font-extrabold text-gray-900">{product.price || 'Contact Us'}</div>
-              </div>
-              
-              <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full sm:w-auto ml-auto">
                 <a 
                   href={`https://wa.me/1234567890?text=${whatsappMessage}`} 
                   target="_blank" 
@@ -272,8 +267,7 @@ export default function ProductDetails() {
                     <Link to={`/products/${related._id}`}>
                       <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors line-clamp-2">{related.name}</h3>
                     </Link>
-                    <div className="flex items-center justify-between mt-auto pt-4">
-                      <span className="font-semibold text-gray-900 bg-gray-50 px-3 py-1 rounded-lg text-sm">{related.price}</span>
+                    <div className="flex items-center justify-end mt-auto pt-4">
                       <Link to={`/products/${related._id}`} className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
                         <ChevronRight className="w-4 h-4" />
                       </Link>

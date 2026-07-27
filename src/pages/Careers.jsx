@@ -1,28 +1,26 @@
+import { useState, useEffect } from 'react';
 import { Briefcase, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const jobs = [
-  {
-    title: "Senior Sales Engineer",
-    department: "Sales",
-    location: "New York, USA (Hybrid)",
-    type: "Full-time"
-  },
-  {
-    title: "Supply Chain Manager",
-    department: "Operations",
-    location: "London, UK",
-    type: "Full-time"
-  },
-  {
-    title: "Automation Technician",
-    department: "Engineering",
-    location: "Berlin, Germany",
-    type: "Contract"
-  }
-];
+import api from '../services/api';
 
 export default function Careers() {
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const fetchJobs = async () => {
+      try {
+        const res = await api.get('/careers');
+        setJobs(res.data.data);
+      } catch (err) {
+        console.error('Failed to load careers:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchJobs();
+  }, []);
   return (
     <div className="w-full">
       <motion.div 
@@ -39,13 +37,17 @@ export default function Careers() {
         <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">Open Positions</h2>
         
         <div className="space-y-6">
-          {jobs.map((job, index) => (
+          {loading ? (
+            <div className="text-center py-12 text-gray-500">Loading open positions...</div>
+          ) : jobs.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">There are currently no open positions. Please check back later.</div>
+          ) : jobs.map((job, index) => (
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
-              key={index} 
+              key={job._id || index}  
               className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 hover:border-primary hover:shadow-lg transition-all group"
             >
               <div className="flex gap-4 items-start">

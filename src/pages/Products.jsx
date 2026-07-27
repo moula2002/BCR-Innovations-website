@@ -10,20 +10,27 @@ export default function Products() {
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const categoryFilter = searchParams.get('category');
+  const subcategoryFilter = searchParams.get('subcategory');
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [categoryFilter, subcategoryFilter]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const [prodRes, catRes] = await Promise.all([
+        const [prodRes, catRes, subRes] = await Promise.all([
           api.get('/products'),
-          api.get('/categories')
+          api.get('/categories'),
+          api.get('/subcategories')
         ]);
         setProducts(prodRes.data.data);
         setCategories(catRes.data.data);
+        setSubcategories(subRes.data.data);
       } catch (err) {
         console.error('Failed to fetch data:', err);
       } finally {
@@ -36,11 +43,12 @@ export default function Products() {
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesCategory = categoryFilter ? product.category === categoryFilter : true;
+      const matchesSubcategory = subcategoryFilter ? product.subcategory === subcategoryFilter : true;
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesCategory && matchesSearch;
+      return matchesCategory && matchesSubcategory && matchesSearch;
     });
-  }, [categoryFilter, searchTerm, products]);
+  }, [categoryFilter, subcategoryFilter, searchTerm, products]);
 
   if (loading) {
     return <div className="max-w-7xl mx-auto px-6 py-20 text-center text-gray-500">Loading products...</div>;
@@ -86,7 +94,7 @@ export default function Products() {
                 <li key={cat.id}>
                   <button 
                     onClick={() => setSearchParams({ category: cat.id })}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex justify-between items-center ${categoryFilter === cat.id ? 'bg-primary/10 text-primary font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex justify-between items-center ${categoryFilter === cat.id && !subcategoryFilter ? 'bg-primary/10 text-primary font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
                     <div className="flex items-center gap-3">
                       {cat.image ? (
@@ -100,6 +108,21 @@ export default function Products() {
                     </div>
                     <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-500 shrink-0">{cat.count}</span>
                   </button>
+                  {subcategories.filter(sub => sub.parentCategory === cat.id).length > 0 && (
+                    <ul className="pl-14 mt-1 mb-2 space-y-1">
+                      {subcategories.filter(sub => sub.parentCategory === cat.id).map(sub => (
+                        <li key={sub.id}>
+                          <button
+                            onClick={() => setSearchParams({ category: cat.id, subcategory: sub.id })}
+                            className={`w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors flex justify-between items-center ${subcategoryFilter === sub.id ? 'bg-primary/5 text-primary font-medium' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
+                          >
+                            <span className="truncate">{sub.name}</span>
+                            <span className="text-xs bg-gray-100 px-1.5 py-0.5 rounded-md text-gray-400 shrink-0">{sub.count}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               ))}
             </ul>
@@ -157,8 +180,7 @@ export default function Products() {
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
                     </Link>
                     <p className="text-gray-600 text-sm mb-6 line-clamp-2 flex-grow">{product.description}</p>
-                    <div className="flex items-center justify-between mt-auto">
-                      <span className="font-semibold text-gray-900 bg-gray-50 px-3 py-1 rounded-lg text-sm">{product.price}</span>
+                    <div className="flex items-center justify-end mt-auto">
                       <Link to={`/products/${product._id}`} className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
                         <ChevronRight className="w-5 h-5" />
                       </Link>

@@ -12,6 +12,7 @@ export default function Home() {
   const [loadingCats, setLoadingCats] = useState(true);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchCategories = async () => {
       try {
         const response = await api.get('/categories');
@@ -61,7 +62,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full mt-10">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full mt-52 md:mt-64">
           <motion.div
             initial="hidden"
             animate="visible"
