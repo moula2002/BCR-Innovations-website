@@ -1,9 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
 import { Check, ArrowLeft, Send, PhoneCall, Package, Ruler, Box, ShieldCheck, Wrench, ChevronRight, Info } from 'lucide-react';
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
+import { getImageUrl } from '../utils';
 
 const WhatsAppIcon = ({ className }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -19,6 +19,7 @@ export default function ProductDetails() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('description');
+  const [isImageExpanded, setIsImageExpanded] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -40,7 +41,6 @@ export default function ProductDetails() {
         const allProds = allProdRes.data.data;
         let related = allProds.filter(p => p.category === prodRes.data.data.category && p._id !== id);
         
-        // If we don't have enough related products in the same category, fill it up with others
         if (related.length < 4) {
           const otherProds = allProds.filter(p => p._id !== id && !related.find(r => r._id === p._id));
           related = [...related, ...otherProds].slice(0, 4);
@@ -79,8 +79,6 @@ export default function ProductDetails() {
     );
   }
 
-
-
   const whatsappMessage = encodeURIComponent(`Hello! I'm interested in the ${product.name}. Could you provide more details?`);
 
   return (
@@ -100,16 +98,16 @@ export default function ProductDetails() {
 
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid lg:grid-cols-2 gap-16 mb-24">
-          {/* Product Image Gallery (Premium Design) */}
+          {/* Product Image Gallery */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="space-y-6"
           >
-            <div className="aspect-square bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-xl shadow-gray-200/50 relative group p-8 flex items-center justify-center">
+            <div className="aspect-square bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-xl shadow-gray-200/50 relative group p-8 flex items-center justify-center cursor-zoom-in" onClick={() => setIsImageExpanded(true)}>
               <div className="absolute inset-0 bg-gradient-to-tr from-gray-50 to-white -z-10"></div>
               <img 
-                src={product.image} 
+                src={getImageUrl(product.image)} 
                 alt={product.name} 
                 className="w-full h-full object-contain object-center drop-shadow-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
               />
@@ -123,7 +121,7 @@ export default function ProductDetails() {
             </div>
           </motion.div>
 
-          {/* Product Info (Premium Design) */}
+          {/* Product Info */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -254,7 +252,7 @@ export default function ProductDetails() {
                 >
                   <Link to={`/products/${related._id}`} className="block relative aspect-[4/3] overflow-hidden bg-gray-100">
                     <img 
-                      src={related.image} 
+                      src={getImageUrl(related.image)} 
                       alt={related.name} 
                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     />

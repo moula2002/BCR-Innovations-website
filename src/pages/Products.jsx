@@ -1,12 +1,12 @@
-import { useState, useMemo, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { Search, Filter, ChevronRight } from 'lucide-react';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Search, ChevronRight, ArrowLeft } from 'lucide-react';
 import api from '../services/api';
 import { motion } from 'framer-motion';
+import { getImageUrl } from '../utils';
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -28,9 +28,9 @@ export default function Products() {
           api.get('/categories'),
           api.get('/subcategories')
         ]);
-        setProducts(prodRes.data.data);
-        setCategories(catRes.data.data);
-        setSubcategories(subRes.data.data);
+        setProducts(prodRes.data.data || []);
+        setCategories(catRes.data.data || []);
+        setSubcategories(subRes.data.data || []);
       } catch (err) {
         console.error('Failed to fetch data:', err);
       } finally {
@@ -40,157 +40,193 @@ export default function Products() {
     fetchData();
   }, []);
 
+  const activeCategory = useMemo(() => categories.find(c => c.id === categoryFilter), [categoryFilter, categories]);
+  const activeSubcategory = useMemo(() => subcategories.find(s => s.id === subcategoryFilter), [subcategoryFilter, subcategories]);
+
+  // Which view are we in?
+  // 1. If no category -> Category View
+  // 2. If category but no subcategory (and subcategories exist) -> Subcategory View
+  // 3. If subcategory -> Product View
+  
+  const relevantSubcategories = useMemo(() => {
+    if (!categoryFilter) return [];
+    return subcategories.filter(sub => sub.parentCategory === categoryFilter);
+  }, [categoryFilter, subcategories]);
+
+  const viewState = useMemo(() => {
+    if (!categoryFilter) return 'CATEGORIES';
+    if (categoryFilter && !subcategoryFilter && relevantSubcategories.length > 0) return 'SUBCATEGORIES';
+    return 'PRODUCTS';
+  }, [categoryFilter, subcategoryFilter, relevantSubcategories]);
+
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesCategory = categoryFilter ? product.category === categoryFilter : true;
       const matchesSubcategory = subcategoryFilter ? product.subcategory === subcategoryFilter : true;
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesCategory && matchesSubcategory && matchesSearch;
+      return matchesCategory && matchesSubcategory;
     });
-  }, [categoryFilter, subcategoryFilter, searchTerm, products]);
+  }, [categoryFilter, subcategoryFilter, products]);
 
   if (loading) {
-    return <div className="max-w-7xl mx-auto px-6 py-20 text-center text-gray-500">Loading products...</div>;
+    return <div className="min-h-screen pt-40 pb-20 text-center text-gray-500 text-xl font-medium">Loading products...</div>;
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 pt-32 pb-12 md:pt-40 md:pb-20">
-      {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-12 text-center md:text-left"
-      >
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">Our Products</h1>
-        <p className="text-lg text-gray-600 max-w-2xl">Explore our comprehensive range of high-quality industrial supplies, machinery, and automation systems.</p>
-      </motion.div>
-
-      <div className="flex flex-col lg:flex-row gap-10">
-        {/* Sidebar Filters */}
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="w-full lg:w-1/4"
-        >
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-28">
-            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-              <Filter className="w-5 h-5 text-primary" />
-              Categories
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <button 
-                  onClick={() => setSearchParams({})}
-                  className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-3 ${!categoryFilter ? 'bg-primary/10 text-primary font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
-                >
-                  <div className="w-8 h-8 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-                    <Filter className="w-4 h-4" />
-                  </div>
-                  <span>All Products</span>
-                </button>
-              </li>
-              {categories.map(cat => (
-                <li key={cat.id}>
-                  <button 
-                    onClick={() => setSearchParams({ category: cat.id })}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex justify-between items-center ${categoryFilter === cat.id && !subcategoryFilter ? 'bg-primary/10 text-primary font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {cat.image ? (
-                        <img src={cat.image} alt={cat.name} className="w-8 h-8 rounded-md object-cover border border-gray-100 shrink-0 bg-white" />
-                      ) : (
-                        <div className="w-8 h-8 rounded-md bg-gray-100 flex items-center justify-center shrink-0 border border-gray-100">
-                          <span className="text-gray-400 text-xs font-medium uppercase">{cat.name.charAt(0)}</span>
-                        </div>
-                      )}
-                      <span className="truncate">{cat.name}</span>
-                    </div>
-                    <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-500 shrink-0">{cat.count}</span>
-                  </button>
-                  {subcategories.filter(sub => sub.parentCategory === cat.id).length > 0 && (
-                    <ul className="pl-14 mt-1 mb-2 space-y-1">
-                      {subcategories.filter(sub => sub.parentCategory === cat.id).map(sub => (
-                        <li key={sub.id}>
-                          <button
-                            onClick={() => setSearchParams({ category: cat.id, subcategory: sub.id })}
-                            className={`w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors flex justify-between items-center ${subcategoryFilter === sub.id ? 'bg-primary/5 text-primary font-medium' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}
-                          >
-                            <span className="truncate">{sub.name}</span>
-                            <span className="text-xs bg-gray-100 px-1.5 py-0.5 rounded-md text-gray-400 shrink-0">{sub.count}</span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </motion.div>
-
-        {/* Product Grid */}
-        <div className="w-full lg:w-3/4">
-          {/* Search Bar */}
-          <div className="relative mb-8">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input 
-              type="text" 
-              placeholder="Search products by name or description..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
-            />
-          </div>
-
-          {/* Results */}
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-300">
-              <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
-              <button 
-                onClick={() => { setSearchTerm(''); setSearchParams({}); }}
-                className="mt-4 text-primary font-medium hover:underline"
-              >
-                Clear all filters
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {filteredProducts.map((product, index) => (
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  key={product._id} 
-                  className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all group flex flex-col"
-                >
-                  <Link to={`/products/${product._id}`} className="block relative aspect-[4/3] overflow-hidden bg-gray-100">
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-primary shadow-sm">
-                      {categories.find(c => c.id === product.category)?.name}
-                    </div>
-                  </Link>
-                  <div className="p-6 flex flex-col flex-grow">
-                    <div className="text-sm text-gray-400 mb-2 font-medium">{product.brands}</div>
-                    <Link to={`/products/${product._id}`}>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
-                    </Link>
-                    <p className="text-gray-600 text-sm mb-6 line-clamp-2 flex-grow">{product.description}</p>
-                    <div className="flex items-center justify-end mt-auto">
-                      <Link to={`/products/${product._id}`} className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                        <ChevronRight className="w-5 h-5" />
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+    <div className="min-h-screen bg-gray-50 pt-28 pb-20">
+      {/* Dynamic Header Block */}
+      <div className="bg-[#4b77b7] text-white py-24 mb-12 flex flex-col items-center justify-center text-center">
+        <div className="max-w-4xl mx-auto px-6 flex flex-col items-center">
+          
+          {/* Breadcrumbs / Back button */}
+          {viewState === 'SUBCATEGORIES' && (
+            <button onClick={() => setSearchParams({})} className="flex items-center text-white/80 hover:text-white transition-colors mb-8 text-sm font-medium">
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Products
+            </button>
           )}
+          {viewState === 'PRODUCTS' && activeCategory && (
+            <button onClick={() => setSearchParams({ category: activeCategory.id })} className="flex items-center text-white/80 hover:text-white transition-colors mb-8 text-sm font-medium">
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to {activeCategory.name}
+            </button>
+          )}
+
+          <motion.h1 
+            key={viewState} // Forces re-animation on state change
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-5xl md:text-6xl font-bold tracking-wider uppercase mb-8"
+          >
+            {viewState === 'CATEGORIES' && "OUR PRODUCTS"}
+            {viewState === 'SUBCATEGORIES' && activeCategory?.name}
+            {viewState === 'PRODUCTS' && (activeSubcategory?.name || activeCategory?.name || "PRODUCTS")}
+          </motion.h1>
+          
+          <motion.div 
+            key={`${viewState}-desc`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="text-white/90 text-lg md:text-xl leading-relaxed space-y-6"
+          >
+            {viewState === 'CATEGORIES' && (
+              <p>Explore our comprehensive range of high-quality industrial supplies, machinery, and automation systems.</p>
+            )}
+            {viewState === 'SUBCATEGORIES' && activeCategory?.description?.split('\n').map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+            {viewState === 'PRODUCTS' && activeSubcategory?.description?.split('\n').map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </motion.div>
         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6">
+        
+        {/* Categories View */}
+        {viewState === 'CATEGORIES' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {categories.map((cat, idx) => (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
+                key={cat.id} 
+                onClick={() => setSearchParams({ category: cat.id })}
+                className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer flex flex-col group border border-gray-100"
+              >
+                <div className="p-8 pb-4 flex-grow flex items-center justify-center bg-white aspect-[4/3]">
+                  {cat.image ? (
+                    <img src={getImageUrl(cat.image)} alt={cat.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-32 h-32 bg-gray-50 rounded-2xl flex items-center justify-center text-5xl text-gray-300 font-bold uppercase">{cat.name.charAt(0)}</div>
+                  )}
+                </div>
+                <div className="p-6 text-center pt-4 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{cat.name}</h3>
+                  {cat.description && (
+                    <p className="text-gray-500 text-sm mb-6 line-clamp-3">{cat.description}</p>
+                  )}
+                  <div className="mt-auto">
+                    <button className="px-8 py-2.5 rounded-full border border-blue-100 text-[#4b77b7] font-semibold text-sm group-hover:bg-[#4b77b7] group-hover:border-[#4b77b7] group-hover:text-white transition-all duration-300 w-full md:w-auto">
+                      View Range
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {/* Subcategories View */}
+        {viewState === 'SUBCATEGORIES' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {relevantSubcategories.map((sub, idx) => (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
+                key={sub.id} 
+                onClick={() => setSearchParams({ category: categoryFilter, subcategory: sub.id })}
+                className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer flex flex-col group border border-gray-100"
+              >
+                <div className="p-8 pb-4 flex-grow flex items-center justify-center bg-white aspect-[4/3]">
+                  {sub.image ? (
+                    <img src={getImageUrl(sub.image)} alt={sub.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-32 h-32 bg-gray-50 rounded-2xl flex items-center justify-center text-5xl text-gray-300 font-bold uppercase">{sub.name.charAt(0)}</div>
+                  )}
+                </div>
+                <div className="p-6 text-center pt-4 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{sub.name}</h3>
+                  {sub.description && (
+                    <p className="text-gray-500 text-sm mb-6 line-clamp-3">{sub.description}</p>
+                  )}
+                  <div className="mt-auto">
+                    <button className="px-8 py-2.5 rounded-full border border-blue-100 text-[#4b77b7] font-semibold text-sm group-hover:bg-[#4b77b7] group-hover:border-[#4b77b7] group-hover:text-white transition-all duration-300 w-full md:w-auto">
+                      View Range
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        {/* Products View */}
+        {viewState === 'PRODUCTS' && (
+          <div>
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-300 shadow-sm">
+                <p className="text-gray-500 text-lg">No products found in this category.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {filteredProducts.map((product, idx) => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}
+                    key={product._id} 
+                    className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow group flex flex-col border border-gray-100 p-6"
+                  >
+                    <Link to={`/products/${product._id}`} className="block relative aspect-square mb-6 bg-white overflow-hidden">
+                      <img 
+                        src={getImageUrl(product.image)} 
+                        alt={product.name} 
+                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </Link>
+                    <div className="text-center flex flex-col flex-grow">
+                      <Link to={`/products/${product._id}`}>
+                        <h3 className="text-lg font-bold text-gray-900 mb-6 group-hover:text-[#4b77b7] transition-colors line-clamp-2">{product.name}</h3>
+                      </Link>
+                      <div className="mt-auto">
+                         <Link to={`/products/${product._id}`} className="inline-block px-6 py-2.5 rounded-full border border-blue-100 text-[#4b77b7] font-semibold text-xs uppercase tracking-wider group-hover:bg-[#4b77b7] group-hover:border-[#4b77b7] group-hover:text-white transition-all duration-300">
+                          Product Details
+                        </Link>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   );

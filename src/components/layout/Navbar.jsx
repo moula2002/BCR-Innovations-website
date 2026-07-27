@@ -1,13 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Mail } from 'lucide-react';
+import { Menu, X, Phone, Mail, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoUrl from "../../assets/Logo.png";
+import api from '../../services/api';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,14 +21,49 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About Us', path: '/about' },
-    { name: 'Products', path: '/products' },
-    { name: 'FAQ', path: '/faq' },
-    { name: 'Careers', path: '/careers' },
-    { name: 'Contact', path: '/contact' },
-  ];
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const [catRes, subRes] = await Promise.all([
+          api.get('/categories'),
+          api.get('/subcategories')
+        ]);
+        setCategories(catRes.data.data || []);
+        setSubcategories(subRes.data.data || []);
+      } catch (err) {
+        console.error("Failed to load nav dropdown data", err);
+      }
+    };
+    fetchDropdownData();
+  }, []);
+
+  // For mobile menu products accordion
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [mobileActiveCategory, setMobileActiveCategory] = useState(null);
+
+  const renderNavLink = (link) => (
+    <Link
+      key={link.name}
+      to={link.path}
+      className="group h-full flex items-center relative px-2"
+    >
+      <span className={`font-black uppercase tracking-wider text-sm transition-colors duration-300 relative z-10 ${location.pathname === link.path ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600'}`}>
+        {link.name}
+      </span>
+      
+      {location.pathname === link.path && (
+        <motion.div
+          layoutId="navbar-indicator"
+          className="absolute bottom-0 left-0 right-0 h-1 bg-secondary rounded-t-full"
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        />
+      )}
+      
+      {location.pathname !== link.path && (
+        <div className="absolute bottom-0 left-1/2 right-1/2 h-1 bg-gray-200 rounded-t-full transition-all duration-300 group-hover:left-0 group-hover:right-0 opacity-0 group-hover:opacity-100"></div>
+      )}
+    </Link>
+  );
 
   return (
     <motion.header 
@@ -65,30 +104,64 @@ export default function Navbar() {
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-8 h-full">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className="group h-full flex items-center relative px-2"
-                >
-                  <span className={`font-black uppercase tracking-wider text-sm transition-colors duration-300 relative z-10 ${location.pathname === link.path ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600'}`}>
-                    {link.name}
-                  </span>
-                  
-                  {location.pathname === link.path && (
-                    <motion.div
-                      layoutId="navbar-indicator"
-                      className="absolute bottom-0 left-0 right-0 h-1 bg-secondary rounded-t-full"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                  
-                  {/* Hover Indicator (Only when not active) */}
-                  {location.pathname !== link.path && (
-                    <div className="absolute bottom-0 left-1/2 right-1/2 h-1 bg-gray-200 rounded-t-full transition-all duration-300 group-hover:left-0 group-hover:right-0 opacity-0 group-hover:opacity-100"></div>
-                  )}
+              {renderNavLink({ name: 'Home', path: '/' })}
+              {renderNavLink({ name: 'About Us', path: '/about' })}
+              
+              {/* Products Dropdown */}
+              <div className="group h-full flex items-center relative px-2 cursor-pointer">
+                <Link to="/products" className={`font-black uppercase tracking-wider text-sm flex items-center gap-1 transition-colors duration-300 relative z-10 ${location.pathname.includes('/products') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600'}`}>
+                  PRODUCTS <ChevronDown className="w-4 h-4 ml-1 opacity-60" />
                 </Link>
-              ))}
+                
+                {location.pathname.includes('/products') && (
+                  <motion.div layoutId="navbar-indicator" className="absolute bottom-0 left-0 right-0 h-1 bg-secondary rounded-t-full" transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                )}
+                {!location.pathname.includes('/products') && (
+                  <div className="absolute bottom-0 left-1/2 right-1/2 h-1 bg-gray-200 rounded-t-full transition-all duration-300 group-hover:left-0 group-hover:right-0 opacity-0 group-hover:opacity-100"></div>
+                )}
+
+                {/* Primary Dropdown Container */}
+                <div className="absolute top-full left-0 pt-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200">
+                  <div className="bg-white shadow-xl rounded-xl border border-gray-100 py-3 w-72 relative">
+                    {categories.map(cat => {
+                      const subs = subcategories.filter(s => s.parentCategory === cat.id);
+                      const hasSubs = subs.length > 0;
+                      return (
+                        <div key={cat.id} className="relative group/sub">
+                          <Link 
+                            to={`/products?category=${cat.id}`} 
+                            className="px-6 py-3 hover:bg-gray-50 flex items-center justify-between text-gray-700 hover:text-primary transition-colors text-[15px] font-medium"
+                          >
+                            {cat.name}
+                            {hasSubs && <ChevronRight className="w-4 h-4 text-gray-400" />}
+                          </Link>
+
+                          {/* Secondary Dropdown (Subcategories) */}
+                          {hasSubs && (
+                            <div className="absolute top-0 left-full pl-1 opacity-0 pointer-events-none group-hover/sub:opacity-100 group-hover/sub:pointer-events-auto transition-all duration-200">
+                              <div className="bg-white shadow-xl rounded-xl border border-gray-100 py-3 w-64">
+                                {subs.map(sub => (
+                                  <Link 
+                                    key={sub.id} 
+                                    to={`/products?category=${cat.id}&subcategory=${sub.id}`} 
+                                    className="block px-6 py-2.5 hover:bg-gray-50 text-gray-600 hover:text-primary transition-colors text-[14.5px]"
+                                  >
+                                    {sub.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {renderNavLink({ name: 'FAQ', path: '/faq' })}
+              {renderNavLink({ name: 'Careers', path: '/careers' })}
+              {renderNavLink({ name: 'Contact', path: '/contact' })}
             </div>
 
             <div className="hidden md:flex items-center">
@@ -121,28 +194,79 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                 exit={{ opacity: 0, y: -20, height: 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className={`md:hidden absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-gray-100 overflow-hidden ${scrolled ? 'rounded-3xl mt-4 border' : 'rounded-b-3xl'}`}
+                className={`md:hidden absolute top-full left-0 right-0 bg-white shadow-2xl border-t border-gray-100 overflow-y-auto max-h-[70vh] ${scrolled ? 'rounded-3xl mt-4 border' : 'rounded-b-3xl'}`}
               >
-                <div className="px-6 py-6 space-y-2">
-                  {navLinks.map((link, i) => (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      key={link.name}
+                <div className="px-6 py-6 space-y-1">
+                  <Link to="/" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">HOME</Link>
+                  <Link to="/about" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">ABOUT US</Link>
+                  
+                  {/* Mobile Products Accordion */}
+                  <div>
+                    <button 
+                      onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
+                      className="w-full flex items-center justify-between px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary"
                     >
-                      <Link
-                        to={link.path}
-                        onClick={() => setIsOpen(false)}
-                        className={`block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm transition-all ${location.pathname === link.path
-                            ? 'bg-blue-600/10 text-blue-600 pl-6'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600 hover:pl-6'
-                          }`}
-                      >
-                        {link.name}
-                      </Link>
-                    </motion.div>
-                  ))}
+                      PRODUCTS
+                      <ChevronDown className={`w-4 h-4 transition-transform ${mobileProductsOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {mobileProductsOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden pl-4 pr-2"
+                        >
+                          <Link to="/products" onClick={() => setIsOpen(false)} className="block px-4 py-2 mt-1 rounded-lg text-sm font-semibold text-primary hover:bg-primary/5">All Products</Link>
+                          {categories.map(cat => {
+                            const subs = subcategories.filter(s => s.parentCategory === cat.id);
+                            const hasSubs = subs.length > 0;
+                            const isExpanded = mobileActiveCategory === cat.id;
+
+                            return (
+                              <div key={cat.id} className="mt-1">
+                                <button 
+                                  onClick={() => hasSubs ? setMobileActiveCategory(isExpanded ? null : cat.id) : (setIsOpen(false), window.location.href=`/products?category=${cat.id}`)}
+                                  className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-[15px] font-medium text-gray-700 hover:bg-gray-50"
+                                >
+                                  {cat.name}
+                                  {hasSubs && <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />}
+                                </button>
+                                
+                                {hasSubs && isExpanded && (
+                                  <div className="pl-4 border-l-2 border-gray-100 ml-4 mt-1 mb-2 space-y-1">
+                                    <Link 
+                                      to={`/products?category=${cat.id}`} 
+                                      onClick={() => setIsOpen(false)}
+                                      className="block px-4 py-2 rounded-lg text-[14px] text-gray-500 hover:text-primary hover:bg-primary/5"
+                                    >
+                                      All {cat.name}
+                                    </Link>
+                                    {subs.map(sub => (
+                                      <Link 
+                                        key={sub.id} 
+                                        to={`/products?category=${cat.id}&subcategory=${sub.id}`}
+                                        onClick={() => setIsOpen(false)}
+                                        className="block px-4 py-2 rounded-lg text-[14px] text-gray-500 hover:text-primary hover:bg-primary/5"
+                                      >
+                                        {sub.name}
+                                      </Link>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <Link to="/faq" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">FAQ</Link>
+                  <Link to="/careers" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">CAREERS</Link>
+                  <Link to="/contact" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">CONTACT</Link>
+                  
                   <motion.div 
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }} 

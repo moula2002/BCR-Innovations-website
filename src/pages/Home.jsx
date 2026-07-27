@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
+import { getImageUrl } from '../utils';
 
 import heroImg from '../assets/images/hero-branded.png';
 import facilityImg from '../assets/images/facility-man.png';
@@ -222,7 +223,9 @@ export default function Home() {
                   >
                     <div className="w-full aspect-[4/3] mb-8 rounded-3xl overflow-hidden bg-gray-50 flex items-center justify-center relative">
                       {cat.image ? (
-                        <img src={cat.image} alt={cat.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <div className="w-full h-full overflow-hidden">
+                          <img src={getImageUrl(cat.image)} alt={cat.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        </div>
                       ) : (
                         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                           <span className="text-gray-300 font-black text-6xl uppercase">{cat.name.charAt(0)}</span>
