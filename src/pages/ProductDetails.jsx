@@ -16,6 +16,7 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [categoryName, setCategoryName] = useState('');
+  const [subcategoryName, setSubcategoryName] = useState('');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('description');
@@ -25,29 +26,33 @@ export default function ProductDetails() {
     window.scrollTo(0, 0);
     const fetchProduct = async () => {
       try {
-        const [prodRes, allProdRes, catRes] = await Promise.all([
+        const [prodRes, allProdRes, catRes, subRes] = await Promise.all([
           api.get(`/products/${id}`),
           api.get('/products'),
-          api.get('/categories')
+          api.get('/categories'),
+          api.get('/subcategories')
         ]);
         setProduct(prodRes.data.data);
-
+        
         const catData = catRes.data.data;
         setCategories(catData);
-
+        
         const cat = catData.find(c => c.id === prodRes.data.data.category);
         if (cat) setCategoryName(cat.name);
 
+        const sub = subRes.data.data.find(s => s.id === prodRes.data.data.subcategory);
+        if (sub) setSubcategoryName(sub.name);
+
         const allProds = allProdRes.data.data;
         let related = allProds.filter(p => p.category === prodRes.data.data.category && p._id !== id);
-
+        
         if (related.length < 4) {
           const otherProds = allProds.filter(p => p._id !== id && !related.find(r => r._id === p._id));
           related = [...related, ...otherProds].slice(0, 4);
         } else {
           related = related.slice(0, 4);
         }
-
+        
         setRelatedProducts(related);
       } catch (err) {
         console.error('Failed to fetch product details:', err);
@@ -82,15 +87,25 @@ export default function ProductDetails() {
   const whatsappMessage = encodeURIComponent(`Hello! I'm interested in the ${product.name}. Could you provide more details?`);
 
   return (
-    <div className="bg-gray-50/50 min-h-screen pb-24">
+    <div className="bg-transparent min-h-screen pb-24">
       {/* Breadcrumb Header */}
-      <div className="bg-white border-b border-gray-100 pt-28 pb-6 md:pt-36 md:pb-6">
-        <div className="max-w-7xl mx-auto px-6 flex items-center gap-2 text-sm font-medium text-gray-500">
+      <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 pt-28 pb-6 md:pt-36 md:pb-6 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center gap-2 text-sm font-medium text-gray-500">
           <Link to="/products" className="hover:text-primary transition-colors flex items-center gap-1">
             <ArrowLeft className="w-4 h-4" /> Products
           </Link>
           <ChevronRight className="w-4 h-4 text-gray-300" />
-          <span className="text-primary">{categoryName || 'Category'}</span>
+          <Link to={`/products?category=${product.category}`} className="hover:text-primary transition-colors">
+            {categoryName || 'Category'}
+          </Link>
+          {subcategoryName && (
+            <>
+              <ChevronRight className="w-4 h-4 text-gray-300" />
+              <Link to={`/products?category=${product.category}&subcategory=${product.subcategory}`} className="hover:text-primary transition-colors">
+                {subcategoryName}
+              </Link>
+            </>
+          )}
           <ChevronRight className="w-4 h-4 text-gray-300" />
           <span className="text-gray-900 truncate max-w-[200px] sm:max-w-none">{product.name}</span>
         </div>
@@ -127,10 +142,11 @@ export default function ProductDetails() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col"
           >
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
               <span className="text-primary font-bold tracking-widest text-sm uppercase bg-primary/10 px-3 py-1 rounded-full">
                 {categoryName}
               </span>
+              {product.brands && <span className="bg-orange-500/10 text-orange-600 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">{product.brands}</span>}
               {product.sku && <span className="text-gray-400 text-sm font-medium">SKU: {product.sku}</span>}
             </div>
 
@@ -165,39 +181,91 @@ export default function ProductDetails() {
             </div>
 
             {/* Interactive Tabs */}
-            <div className="mb-8">
-              <div className="flex gap-6 border-b border-gray-200 mb-6">
-                {['description', 'specifications', 'applications'].map((tab) => (
-                  (tab === 'description' || product[tab]) && (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(tab)}
-                      className={`pb-4 text-sm font-bold capitalize transition-colors relative ${activeTab === tab ? 'text-primary' : 'text-gray-400 hover:text-gray-600'}`}
-                    >
-                      {tab}
-                      {activeTab === tab && (
-                        <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-                      )}
-                    </button>
-                  )
-                ))}
-              </div>
+            {(() => {
+              const availableTabs = [
+                { id: 'description', label: 'description', content: product.description },
+                { id: 'specifications', label: 'specifications', content: product.specifications },
+                { id: 'applications', label: 'applications', content: product.applications },
+                ...(product.tabs || []).map((t, idx) => ({
+                  id: `custom-${idx}`,
+                  label: t.name,
+                  isCustom: true,
+                  tabData: t
+                }))
+              ].filter(t => t.id === 'description' || t.content || t.isCustom);
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-gray-600 leading-relaxed min-h-[120px]"
-                >
-                  {activeTab === 'description' && <p>{product.description}</p>}
-                  {activeTab === 'specifications' && <p className="whitespace-pre-wrap">{product.specifications}</p>}
-                  {activeTab === 'applications' && <p className="whitespace-pre-wrap">{product.applications}</p>}
-                </motion.div>
-              </AnimatePresence>
-            </div>
+              // Reset activeTab if it's no longer valid
+              if (!availableTabs.some(t => t.id === activeTab)) {
+                setActiveTab('description');
+              }
+
+              return (
+                <div className="mb-8">
+                  <div className="flex flex-wrap gap-6 border-b border-gray-200 mb-6">
+                    {availableTabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`pb-4 text-sm font-bold capitalize transition-colors relative ${activeTab === tab.id ? 'text-primary' : 'text-gray-400 hover:text-gray-600'}`}
+                      >
+                        {tab.label}
+                        {activeTab === tab.id && (
+                          <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <AnimatePresence mode="wait">
+                    <motion.div 
+                      key={activeTab}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-gray-600 leading-relaxed min-h-[120px]"
+                    >
+                      {activeTab === 'description' && <p>{product.description}</p>}
+                      {activeTab === 'specifications' && <p className="whitespace-pre-wrap">{product.specifications}</p>}
+                      {activeTab === 'applications' && <p className="whitespace-pre-wrap">{product.applications}</p>}
+                      
+                      {activeTab.startsWith('custom-') && (() => {
+                        const idx = parseInt(activeTab.split('-')[1]);
+                        const tab = product.tabs?.[idx];
+                        if (!tab) return null;
+                        return (
+                          <div className="space-y-6">
+                            {tab.title && <h3 className="text-xl font-bold text-gray-900 mb-4">{tab.title}</h3>}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                              <div className="space-y-6">
+                                {tab.description && <p className="whitespace-pre-wrap text-gray-600 leading-relaxed">{tab.description}</p>}
+                                {tab.features && tab.features.length > 0 && (
+                                  <div className="space-y-4">
+                                    {tab.features.map((feat, fIdx) => (
+                                      <div key={fIdx} className="bg-white/50 backdrop-blur-md p-5 rounded-2xl border border-white flex gap-4 shadow-[0_4px_30px_rgba(0,0,0,0.01)] hover:border-gray-200 transition-colors">
+                                        <div className="flex-1">
+                                          {feat.heading && <h4 className="font-bold text-gray-900 mb-1">{feat.heading}</h4>}
+                                          {feat.description && <p className="text-sm text-gray-500 leading-relaxed">{feat.description}</p>}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              {tab.image && (
+                                <div className="rounded-3xl overflow-hidden border border-white shadow-lg bg-white/30 p-2 max-w-md">
+                                  <img src={getImageUrl(tab.image)} alt={tab.title || tab.name} className="w-full h-auto object-cover rounded-2xl" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              );
+            })()}
 
             {product.features && product.features.length > 0 && (
               <div className="mb-10">

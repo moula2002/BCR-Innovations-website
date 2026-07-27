@@ -1,8 +1,24 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import logoUrl from '../../assets/Logo.png';
+import api from '../../services/api';
 
 export default function Footer() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get('/categories');
+        setCategories(res.data.data || []);
+      } catch (err) {
+        console.error("Failed to load footer categories", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   return (
     <footer className="bg-primary text-gray-300 pt-16 pb-8 border-t border-primary-dark">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
@@ -55,10 +71,16 @@ export default function Footer() {
             <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-secondary rounded-full"></span>
           </h3>
           <ul className="space-y-3">
-            <li><Link to="/products?category=williams-display" className="hover:text-secondary transition-colors">Williams Display Counters</Link></li>
-            <li><Link to="/products?category=sln-kitchen" className="hover:text-secondary transition-colors">SLN Kitchen Equipment</Link></li>
-            <li><Link to="/products?category=sml-cleanroom" className="hover:text-secondary transition-colors">SML Clean Room Equipment</Link></li>
-            <li><Link to="/products?category=geebee-bakery" className="hover:text-secondary transition-colors">Gee Bee Bakery Equipment</Link></li>
+            {categories.map(cat => (
+              <li key={cat.id}>
+                <Link to={`/products?category=${cat.id}`} className="hover:text-secondary transition-colors">
+                  {cat.name}
+                </Link>
+              </li>
+            ))}
+            {categories.length === 0 && (
+              <li><span className="text-gray-500">No categories found</span></li>
+            )}
           </ul>
         </div>
 
