@@ -15,6 +15,7 @@ export default function Products() {
   const categoryFilter = searchParams.get('category');
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchData = async () => {
       try {
         const [prodRes, catRes] = await Promise.all([

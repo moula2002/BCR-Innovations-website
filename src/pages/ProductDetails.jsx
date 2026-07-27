@@ -21,6 +21,7 @@ export default function ProductDetails() {
   const [activeTab, setActiveTab] = useState('description');
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchProduct = async () => {
       try {
         const [prodRes, allProdRes, catRes] = await Promise.all([
@@ -85,7 +86,7 @@ export default function ProductDetails() {
   return (
     <div className="bg-gray-50/50 min-h-screen pb-24">
       {/* Breadcrumb Header */}
-      <div className="bg-white border-b border-gray-100 py-6">
+      <div className="bg-white border-b border-gray-100 pt-28 pb-6 md:pt-36 md:pb-6">
         <div className="max-w-7xl mx-auto px-6 flex items-center gap-2 text-sm font-medium text-gray-500">
           <Link to="/products" className="hover:text-primary transition-colors flex items-center gap-1">
             <ArrowLeft className="w-4 h-4" /> Products
