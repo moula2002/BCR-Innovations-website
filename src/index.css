@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0277bd; /* Logo Bright Blue */
+  --color-primary: #0277bd;
+  /* Logo Bright Blue */
   --color-primary-dark: #01579b;
-  --color-secondary: #f58220; /* Logo Vibrant Orange */
+  --color-secondary: #f58220;
+  /* Logo Vibrant Orange */
   --color-secondary-dark: #e65100;
   --color-surface: #ffffff;
   --color-surface-hover: #f9fafb;
@@ -35,7 +37,7 @@ body {
 .glass-nav {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .gradient-text {
@@ -50,6 +52,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

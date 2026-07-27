@@ -27,7 +27,7 @@ export default function FAQ() {
   return (
     <div className="w-full bg-gray-50 min-h-screen pt-32 pb-20 md:pt-40">
       <div className="max-w-4xl mx-auto px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
@@ -38,15 +38,15 @@ export default function FAQ() {
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
-              key={index} 
+              key={index}
               className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${openIndex === index ? 'border-primary shadow-md' : 'border-gray-200 hover:border-gray-300'}`}
             >
-              <button 
+              <button
                 className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
                 onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
               >
@@ -57,8 +57,8 @@ export default function FAQ() {
                   <ChevronDown className="w-5 h-5 text-gray-400 shrink-0" />
                 )}
               </button>
-              
-              <div 
+
+              <div
                 className={`px-6 overflow-hidden transition-all duration-300 ${openIndex === index ? 'max-h-96 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}
               >
                 <p className="text-gray-600 leading-relaxed border-t border-gray-100 pt-4">{faq.answer}</p>

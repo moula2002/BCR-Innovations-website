@@ -22,7 +22,7 @@ export default function Contact() {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setSubmitStatus(null);
-    
+
     try {
       const response = await api.post('/contacts', data);
 
@@ -43,7 +43,7 @@ export default function Contact() {
   return (
     <div className="w-full">
       {/* Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -54,9 +54,9 @@ export default function Contact() {
       </motion.div>
 
       <div className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-16">
-        
+
         {/* Contact Info & Map */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
@@ -75,7 +75,7 @@ export default function Contact() {
                   <p className="text-gray-600 mt-1">No. 860/A, Ground Floor, Narendra Chambers,<br />Opp. Modi Eye Hospital, West of Chord Road,<br />2nd Stage, Rajajinagar, Bengaluru - 560086</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                   <Phone className="w-6 h-6" />
@@ -85,7 +85,7 @@ export default function Contact() {
                   <p className="text-gray-600 mt-1">+91 98440 13768</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                   <Mail className="w-6 h-6" />
@@ -100,20 +100,20 @@ export default function Contact() {
 
           {/* Google Maps Embed */}
           <div className="h-[300px] w-full rounded-2xl overflow-hidden shadow-md border border-gray-200">
-            <iframe 
-              src="https://maps.google.com/maps?q=Narendra%20Chambers,%20Rajajinagar,%20Bengaluru&t=&z=15&ie=UTF8&iwloc=&output=embed" 
-              width="100%" 
-              height="100%" 
-              style={{ border: 0 }} 
-              allowFullScreen="" 
-              loading="lazy" 
+            <iframe
+              src="https://maps.google.com/maps?q=Narendra%20Chambers,%20Rajajinagar,%20Bengaluru&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
         </motion.div>
 
         {/* Email Inquiry Form */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
@@ -125,15 +125,15 @@ export default function Contact() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">First Name *</label>
-                <input 
-                  {...register("firstName", { required: true })} 
+                <input
+                  {...register("firstName", { required: true })}
                   className={`w-full px-4 py-3 rounded-xl border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-gray-50`}
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Last Name *</label>
-                <input 
-                  {...register("lastName", { required: true })} 
+                <input
+                  {...register("lastName", { required: true })}
                   className={`w-full px-4 py-3 rounded-xl border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-gray-50`}
                 />
               </div>
@@ -141,32 +141,32 @@ export default function Contact() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Email Address *</label>
-              <input 
+              <input
                 type="email"
-                {...register("email", { required: true })} 
+                {...register("email", { required: true })}
                 className={`w-full px-4 py-3 rounded-xl border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-gray-50`}
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Subject</label>
-              <input 
-                {...register("subject")} 
+              <input
+                {...register("subject")}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-gray-50"
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Message *</label>
-              <textarea 
-                {...register("message", { required: true })} 
+              <textarea
+                {...register("message", { required: true })}
                 rows="5"
                 className={`w-full px-4 py-3 rounded-xl border ${errors.message ? 'border-red-500' : 'border-gray-300'} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all bg-gray-50 resize-none`}
               ></textarea>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isSubmitting}
               className="w-full py-4 bg-secondary hover:bg-secondary-dark text-white rounded-xl font-bold text-lg transition-colors shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
@@ -176,14 +176,14 @@ export default function Contact() {
                 <><Send className="w-5 h-5" /> Send Message</>
               )}
             </button>
-            
+
             {submitStatus === 'success' && (
               <div className="flex items-center gap-2 text-green-600 bg-green-50 p-4 rounded-xl border border-green-100">
                 <CheckCircle2 className="w-5 h-5 shrink-0" />
                 <p>Thank you for contacting us! We'll be in touch shortly.</p>
               </div>
             )}
-            
+
             {submitStatus === 'error' && (
               <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-xl border border-red-100">
                 <AlertCircle className="w-5 h-5 shrink-0" />

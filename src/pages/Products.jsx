@@ -8,7 +8,7 @@ import { getImageUrl } from '../utils';
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  
+
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -48,7 +48,7 @@ export default function Products() {
   // 1. If no category -> Category View
   // 2. If category but no subcategory (and subcategories exist) -> Subcategory View
   // 3. If subcategory -> Product View
-  
+
   const relevantSubcategories = useMemo(() => {
     if (!categoryFilter) return [];
     return subcategories.filter(sub => sub.parentCategory === categoryFilter);
@@ -77,7 +77,7 @@ export default function Products() {
       {/* Dynamic Header Block */}
       <div className="bg-[#4b77b7] text-white py-24 mb-12 flex flex-col items-center justify-center text-center">
         <div className="max-w-4xl mx-auto px-6 flex flex-col items-center">
-          
+
           {/* Breadcrumbs / Back button */}
           {viewState === 'SUBCATEGORIES' && (
             <button onClick={() => setSearchParams({})} className="flex items-center text-white/80 hover:text-white transition-colors mb-8 text-sm font-medium">
@@ -90,7 +90,7 @@ export default function Products() {
             </button>
           )}
 
-          <motion.h1 
+          <motion.h1
             key={viewState} // Forces re-animation on state change
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -100,8 +100,8 @@ export default function Products() {
             {viewState === 'SUBCATEGORIES' && activeCategory?.name}
             {viewState === 'PRODUCTS' && (activeSubcategory?.name || activeCategory?.name || "PRODUCTS")}
           </motion.h1>
-          
-          <motion.div 
+
+          <motion.div
             key={`${viewState}-desc`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -122,14 +122,14 @@ export default function Products() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6">
-        
+
         {/* Categories View */}
         {viewState === 'CATEGORIES' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {categories.map((cat, idx) => (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
-                key={cat.id} 
+                key={cat.id}
                 onClick={() => setSearchParams({ category: cat.id })}
                 className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer flex flex-col group border border-gray-100"
               >
@@ -160,9 +160,9 @@ export default function Products() {
         {viewState === 'SUBCATEGORIES' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {relevantSubcategories.map((sub, idx) => (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
-                key={sub.id} 
+                key={sub.id}
                 onClick={() => setSearchParams({ category: categoryFilter, subcategory: sub.id })}
                 className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer flex flex-col group border border-gray-100"
               >
@@ -199,15 +199,15 @@ export default function Products() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {filteredProducts.map((product, idx) => (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}
-                    key={product._id} 
+                    key={product._id}
                     className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow group flex flex-col border border-gray-100 p-6"
                   >
                     <Link to={`/products/${product._id}`} className="block relative aspect-square mb-6 bg-white overflow-hidden">
-                      <img 
-                        src={getImageUrl(product.image)} 
-                        alt={product.name} 
+                      <img
+                        src={getImageUrl(product.image)}
+                        alt={product.name}
                         className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                       />
                     </Link>
@@ -216,7 +216,7 @@ export default function Products() {
                         <h3 className="text-lg font-bold text-gray-900 mb-6 group-hover:text-[#4b77b7] transition-colors line-clamp-2">{product.name}</h3>
                       </Link>
                       <div className="mt-auto">
-                         <Link to={`/products/${product._id}`} className="inline-block px-6 py-2.5 rounded-full border border-blue-100 text-[#4b77b7] font-semibold text-xs uppercase tracking-wider group-hover:bg-[#4b77b7] group-hover:border-[#4b77b7] group-hover:text-white transition-all duration-300">
+                        <Link to={`/products/${product._id}`} className="inline-block px-6 py-2.5 rounded-full border border-blue-100 text-[#4b77b7] font-semibold text-xs uppercase tracking-wider group-hover:bg-[#4b77b7] group-hover:border-[#4b77b7] group-hover:text-white transition-all duration-300">
                           Product Details
                         </Link>
                       </div>
