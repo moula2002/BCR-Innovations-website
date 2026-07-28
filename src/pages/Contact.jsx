@@ -31,30 +31,13 @@ export default function Contact() {
     };
 
     try {
-      // First try Vercel Serverless Nodemailer Function /api/contact
-      let success = false;
-      try {
-        const vercelRes = await fetch('/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        if (vercelRes.ok) {
-          success = true;
-        }
-      } catch (err) {
-        console.warn('Vercel API route not available locally, falling back to backend API', err);
-      }
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-      // Also submit to backend API if available
-      if (!success) {
-        const response = await api.post('/contacts', payload);
-        if (response.status === 200 || response.status === 201) {
-          success = true;
-        }
-      }
-
-      if (success) {
+      if (response.ok) {
         setSubmitStatus('success');
         reset();
       } else {

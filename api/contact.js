@@ -38,13 +38,15 @@ export default async function handler(req, res) {
 
   const senderName = `${firstName || ''} ${lastName || ''}`.trim() || 'Applicant / Visitor';
   const targetEmail = 'bcrinnovations2026@gmail.com';
+  const user = process.env.EMAIL_USER || process.env.GMAIL_USER || targetEmail;
+  const rawPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS || process.env.SMTP_PASS || '';
+  const pass = rawPass.replace(/\s+/g, '');
+
   const isCareer = type === 'career' || Boolean(jobTitle || experience || (subject && subject.includes('Job Application')));
 
   const mailSubject = isCareer 
     ? `[Job Application] ${jobTitle || 'General Position'} - ${senderName}`
     : (subject ? `[BCR Inquiry] ${subject}` : `[BCR Web Inquiry] Message from ${senderName}`);
-
-  const hasSmtpConfig = Boolean(process.env.EMAIL_PASS || process.env.GMAIL_PASS || process.env.SMTP_PASS);
 
   const htmlContent = isCareer ? `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background-color: #ffffff;">
@@ -144,60 +146,34 @@ export default async function handler(req, res) {
     </div>
   `;
 
-  if (hasSmtpConfig) {
-    try {
-      const transporter = nodemailer.createTransport({
-        service: process.env.SMTP_SERVICE || 'gmail',
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: Number(process.env.SMTP_PORT) || 465,
-        secure: true,
-        auth: {
-          user: process.env.EMAIL_USER || process.env.GMAIL_USER || targetEmail,
-          pass: process.env.EMAIL_PASS || process.env.GMAIL_PASS || process.env.SMTP_PASS,
-        },
-      });
+  try {
+    const transporter = nodemailer.createTransport({
+      service: process.env.SMTP_SERVICE || 'gmail',
+      auth: {
+        user: user,
+        pass: pass,
+      },
+    });
 
-      await transporter.sendMail({
-        from: `"BCR Innovations" <${process.env.GMAIL_USER || targetEmail}>`,
-        to: targetEmail,
-        replyTo: email,
-        subject: mailSubject,
-        html: htmlContent,
-      });
+    const info = await transporter.sendMail({
+      from: `"BCR Innovations" <${user}>`,
+      to: targetEmail,
+      replyTo: email,
+      subject: mailSubject,
+      html: htmlContent,
+    });
 
-      return res.status(200).json({ success: true, message: 'Email sent via Nodemailer SMTP.' });
-    } catch (smtpError) {
-      console.error('Nodemailer SMTP Error:', smtpError);
-    }
+    return res.status(200).json({
+      success: true,
+      message: 'Email sent successfully via Nodemailer on Vercel.',
+      messageId: info.messageId,
+    });
+  } catch (error) {
+    console.error('Vercel Nodemailer Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Nodemailer failed to send email. Check GMAIL_PASS app password on Vercel.',
+      details: error.message,
+    });
   }
-
-  const web3Key = process.env.WEB3FORMS_KEY;
-  if (web3Key && !web3Key.includes('#')) {
-    try {
-      const web3Response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_key: web3Key,
-          email_to: targetEmail,
-          name: senderName,
-          email: email,
-          subject: mailSubject,
-          message: isCareer 
-            ? `[JOB APPLICATION]\nPosition: ${jobTitle || 'N/A'}\nDepartment: ${department || 'N/A'}\nName: ${senderName}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nExperience: ${experience || 'N/A'}\n\nCover Note / Resume Link:\n${message}`
-            : `Name: ${senderName}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nProduct: ${product || 'N/A'}\n\nMessage:\n${message}`,
-          from_name: "BCR Innovations Careers",
-        }),
-      });
-      const web3Data = await web3Response.json();
-      return res.status(200).json({ success: true, data: web3Data });
-    } catch (err) {
-      console.error('Web3Forms fallback error:', err);
-    }
-  }
-
-  return res.status(200).json({
-    success: true,
-    message: 'Application received and processed successfully.',
-  });
 }
