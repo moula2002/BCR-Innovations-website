@@ -129,7 +129,7 @@ export default function Navbar() {
                       return (
                         <div key={cat.id} className="relative group/sub">
                           <Link 
-                            to={`/products?category=${cat.id}`} 
+                            to={`/products/category/${encodeURIComponent(cat.id)}`} 
                             className="px-6 py-3 hover:bg-gray-50 flex items-center justify-between text-gray-700 hover:text-primary transition-colors text-[15px] font-medium"
                           >
                             {cat.name}
@@ -143,7 +143,7 @@ export default function Navbar() {
                                 {subs.map(sub => (
                                   <Link 
                                     key={sub.id} 
-                                    to={`/products?category=${cat.id}&subcategory=${sub.id}`} 
+                                    to={`/products/category/${encodeURIComponent(cat.id)}/subcategory/${encodeURIComponent(sub.id)}`} 
                                     className="block px-6 py-2.5 hover:bg-gray-50 text-gray-600 hover:text-primary transition-colors text-[14.5px]"
                                   >
                                     {sub.name}
@@ -227,7 +227,7 @@ export default function Navbar() {
                             return (
                               <div key={cat.id} className="mt-1">
                                 <button 
-                                  onClick={() => hasSubs ? setMobileActiveCategory(isExpanded ? null : cat.id) : (setIsOpen(false), window.location.href=`/products?category=${cat.id}`)}
+                                  onClick={() => hasSubs ? setMobileActiveCategory(isExpanded ? null : cat.id) : (setIsOpen(false), window.location.href=`/products/category/${encodeURIComponent(cat.id)}`)}
                                   className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-[15px] font-medium text-gray-700 hover:bg-gray-50"
                                 >
                                   {cat.name}
@@ -237,7 +237,7 @@ export default function Navbar() {
                                 {hasSubs && isExpanded && (
                                   <div className="pl-4 border-l-2 border-gray-100 ml-4 mt-1 mb-2 space-y-1">
                                     <Link 
-                                      to={`/products?category=${cat.id}`} 
+                                      to={`/products/category/${encodeURIComponent(cat.id)}`} 
                                       onClick={() => setIsOpen(false)}
                                       className="block px-4 py-2 rounded-lg text-[14px] text-gray-500 hover:text-primary hover:bg-primary/5"
                                     >
@@ -246,7 +246,7 @@ export default function Navbar() {
                                     {subs.map(sub => (
                                       <Link 
                                         key={sub.id} 
-                                        to={`/products?category=${cat.id}&subcategory=${sub.id}`}
+                                        to={`/products/category/${encodeURIComponent(cat.id)}/subcategory/${encodeURIComponent(sub.id)}`}
                                         onClick={() => setIsOpen(false)}
                                         className="block px-4 py-2 rounded-lg text-[14px] text-gray-500 hover:text-primary hover:bg-primary/5"
                                       >

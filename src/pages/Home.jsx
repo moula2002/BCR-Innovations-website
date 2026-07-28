@@ -206,7 +206,15 @@ export default function Home() {
           </motion.div>
 
           {loadingCats ? (
-            <div className="text-center text-gray-500 py-10 animate-pulse font-medium text-lg">Loading categories...</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 animate-pulse">
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="bg-white rounded-[2rem] p-6 border border-gray-100 flex flex-col items-center h-full space-y-4">
+                  <div className="w-full aspect-[4/3] rounded-3xl bg-gray-100"></div>
+                  <div className="h-6 w-3/4 bg-gray-200 rounded-lg"></div>
+                  <div className="h-7 w-28 bg-gray-100 rounded-full"></div>
+                </div>
+              ))}
+            </div>
           ) : (
             <motion.div
               variants={staggerContainer}
@@ -218,7 +226,7 @@ export default function Home() {
               {categories.map((cat) => (
                 <motion.div variants={scaleIn} key={cat.id} className="h-full">
                   <Link
-                    to={`/products?category=${cat.id}`}
+                    to={`/products/category/${encodeURIComponent(cat.id)}`}
                     className="bg-white rounded-[2rem] p-6 text-center hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-500 group border border-transparent hover:border-gray-100 flex flex-col items-center h-full hover:-translate-y-2"
                   >
                     <div className="w-full aspect-[4/3] mb-8 rounded-3xl overflow-hidden bg-gray-50 flex items-center justify-center relative">

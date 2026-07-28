@@ -73,7 +73,7 @@ export default function Footer() {
           <ul className="space-y-3">
             {categories.map(cat => (
               <li key={cat.id}>
-                <Link to={`/products?category=${cat.id}`} className="hover:text-secondary transition-colors">
+                <Link to={`/products/category/${encodeURIComponent(cat.id)}`} className="hover:text-secondary transition-colors">
                   {cat.name}
                 </Link>
               </li>

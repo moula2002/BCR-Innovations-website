@@ -18,7 +18,8 @@ import {
   ArrowUp,
   Maximize2,
   CheckCircle2,
-  Mail
+  Mail,
+  Sparkles
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -84,9 +85,45 @@ export default function ProductDetails() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-32 flex flex-col items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#0277bd] border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-gray-500 font-medium tracking-wider uppercase text-sm">Loading Product Details...</p>
+      <div className="bg-[#f8fafc] min-h-screen pb-24 font-sans animate-pulse">
+        {/* Hero Banner Skeleton */}
+        <div className="bg-[#0277bd] pt-32 pb-16 md:pt-44 md:pb-20 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 text-center space-y-8">
+            <div className="h-12 md:h-16 w-3/4 max-w-2xl bg-white/20 rounded-2xl mx-auto"></div>
+            <div className="flex flex-wrap justify-center gap-3.5 px-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-11 w-32 bg-white/15 rounded-full"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="max-w-7xl mx-auto px-6 pt-12 space-y-12">
+          {/* Specs Card Skeleton */}
+          <div className="bg-white rounded-[28px] p-6 md:p-8 border border-slate-200/80 shadow-xs space-y-6">
+            <div className="h-6 w-64 bg-slate-200 rounded-lg"></div>
+            <div className="h-20 bg-slate-100 rounded-2xl"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="h-16 bg-slate-100 rounded-2xl"></div>
+              <div className="h-16 bg-slate-100 rounded-2xl"></div>
+              <div className="h-16 bg-slate-100 rounded-2xl"></div>
+            </div>
+          </div>
+
+          {/* Main Details Skeleton */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-5">
+              <div className="h-10 w-3/4 bg-slate-200 rounded-xl"></div>
+              <div className="h-4 w-full bg-slate-100 rounded-lg"></div>
+              <div className="h-4 w-11/12 bg-slate-100 rounded-lg"></div>
+              <div className="h-4 w-4/5 bg-slate-100 rounded-lg"></div>
+            </div>
+            <div className="bg-slate-100 rounded-[32px] h-[380px] flex items-center justify-center border border-slate-200/50">
+              <div className="w-56 h-56 bg-slate-200/60 rounded-3xl"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -179,7 +216,9 @@ export default function ProductDetails() {
       type: 'overview',
       icon: <LayoutGrid className="w-4 h-4" />,
       description: product.description || `${product.name} is a professional, high-performance solution with unique design and high-level technical features, offering a wide range of functionality to suit your needs. A perfect balance between aesthetics and functionality.`,
-      secondaryDescription: product.specifications || "Refrigeration is equalized on all display levels where the air flow does not affect the product. This refrigeration system has a high humidity level which favours correct conservation of the displayed products.",
+      secondaryDescription: (typeof product.specifications === 'string' && product.specifications.trim())
+        ? product.specifications
+        : "Refrigeration is equalized on all display levels where the air flow does not affect the product. This refrigeration system has a high humidity level which favours correct conservation of the displayed products.",
       image: product.image
     },
     {
@@ -273,7 +312,7 @@ export default function ProductDetails() {
           {/* Back to Category Link */}
           <div className="mb-6 flex items-center justify-start md:absolute md:-top-10 md:left-6">
             <Link 
-              to={product.category ? `/products?category=${product.category}` : "/products"} 
+              to={product.category ? `/products/category/${encodeURIComponent(product.category)}` : "/products"} 
               className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium transition-all bg-white/15 hover:bg-white/25 px-5 py-2.5 rounded-full border border-white/25 backdrop-blur-sm shadow-sm hover:scale-105"
             >
               <ArrowLeft className="w-4 h-4" /> {categoryName ? `Back to ${categoryName}` : 'Back to Collection'}
@@ -308,49 +347,112 @@ export default function ProductDetails() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 pt-12">
-        {/* Breadcrumb & Specs Card */}
-        <div className="bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 shadow-sm mb-12 space-y-4">
-          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 font-medium">
-            <Link to="/products" className="hover:text-[#0277bd] transition-colors">Products</Link>
-            <ChevronRight className="w-4 h-4 text-gray-300" />
-            <Link to={`/products?category=${product.category}`} className="text-[#0277bd] font-semibold hover:underline">
-              {categoryName || 'Display Cabinets'}
+        {/* Breadcrumb & Specs Highlight Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="bg-white/95 backdrop-blur-xl rounded-[28px] p-6 md:p-8 border border-slate-200/80 shadow-[0_10px_35px_rgba(0,0,0,0.04)] mb-12 space-y-6 relative overflow-hidden"
+        >
+          {/* Decorative subtle background glow */}
+          <div className="absolute -top-24 -right-24 w-60 h-60 bg-[#0277bd]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+          {/* Breadcrumb Navigation */}
+          <div className="flex flex-wrap items-center gap-1.5 text-sm font-medium">
+            <Link 
+              to="/products" 
+              className="text-gray-500 hover:text-[#0277bd] px-3 py-1.5 rounded-xl hover:bg-slate-100/80 transition-all flex items-center gap-1.5"
+            >
+              <span>Products</span>
+            </Link>
+            <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
+            <Link 
+              to={`/products/category/${encodeURIComponent(product.category)}`} 
+              className="text-[#0277bd] font-bold px-3 py-1.5 rounded-xl hover:bg-blue-50/80 transition-all flex items-center gap-1.5"
+            >
+              <span>{categoryName || 'Display Cabinets'}</span>
             </Link>
             {subcategoryName && (
               <>
-                <ChevronRight className="w-4 h-4 text-gray-300" />
-                <span className="text-gray-600 font-medium">{subcategoryName}</span>
+                <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
+                <Link 
+                  to={`/products/category/${encodeURIComponent(product.category)}/subcategory/${encodeURIComponent(product.subcategory)}`} 
+                  className="text-gray-600 font-semibold px-3 py-1.5 rounded-xl hover:bg-slate-100/80 hover:text-[#0277bd] transition-all flex items-center gap-1.5"
+                >
+                  <span>{subcategoryName}</span>
+                </Link>
               </>
             )}
           </div>
 
-          <div className="w-full pt-1">
-            <div className="bg-[#f0f4f9] text-slate-700 text-xs md:text-sm font-medium px-4 py-2.5 rounded-full inline-flex items-center gap-2.5 max-w-full border border-slate-200/50">
-              <Package className="w-4 h-4 text-[#0277bd] shrink-0" />
-              <span className="truncate md:whitespace-normal">
+          {/* Material & Construction Callout Banner */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="w-full bg-gradient-to-r from-blue-50/90 via-slate-50/90 to-blue-50/40 rounded-2xl p-4 md:p-5 border-l-4 border-[#0277bd] border-y border-r border-slate-200/60 shadow-xs flex items-start gap-4"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#0277bd] text-white flex items-center justify-center shadow-md shadow-blue-600/25 shrink-0 mt-0.5">
+              <Package className="w-5 h-5" />
+            </div>
+            <div className="space-y-1">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#0277bd] flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" /> Premium Build Specifications
+              </span>
+              <p className="text-slate-700 text-sm md:text-base font-medium leading-relaxed">
                 {product.material 
                   ? `The material is fundamental for every planner or designer. Front decorative panel is made of corian. Unit top is made of glass. ${product.material}`
                   : "The material is fundamental for every planner or designer. Front decorative panel is made of corian. Unit top is made of glass. AISI 304 food grade stainless steel with matte finish."
                 }
-              </span>
+              </p>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="flex flex-wrap items-center gap-3 pt-1">
-            <span className="bg-[#f0f4f9] text-slate-700 text-xs md:text-sm font-medium px-4 py-2 rounded-full flex items-center gap-2 border border-slate-200/50">
-              <Ruler className="w-4 h-4 text-[#0277bd]" />
-              <span>{product.size || "Customizable as per Requirement"}</span>
-            </span>
-            <span className="bg-[#f0f4f9] text-slate-700 text-xs md:text-sm font-medium px-4 py-2 rounded-full flex items-center gap-2 border border-slate-200/50">
-              <Box className="w-4 h-4 text-[#0277bd]" />
-              <span>{product.capacity || "3 Deck, 6 Trays / 9 Trays Capacity"}</span>
-            </span>
-            <span className="bg-[#f0f4f9] text-slate-700 text-xs md:text-sm font-medium px-4 py-2 rounded-full flex items-center gap-2 border border-slate-200/50">
-              <ShieldCheck className="w-4 h-4 text-[#0277bd]" />
-              <span>{product.warranty || "1 Year Manufacturer Warranty"}</span>
-            </span>
+          {/* Dynamic Badges Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+            <motion.div 
+              whileHover={{ scale: 1.02, y: -2 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#0277bd]/40 transition-all flex items-center gap-3.5"
+            >
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#0277bd] flex items-center justify-center shrink-0 border border-blue-100">
+                <Ruler className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Dimensions & Size</span>
+                <span className="text-slate-800 text-sm font-semibold">{product.size || "Customizable as per Requirement"}</span>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ scale: 1.02, y: -2 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#0277bd]/40 transition-all flex items-center gap-3.5"
+            >
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+                <Box className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Storage Capacity</span>
+                <span className="text-slate-800 text-sm font-semibold">{product.capacity || "3 Deck, 6 Trays / 9 Trays Capacity"}</span>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              whileHover={{ scale: 1.02, y: -2 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs hover:shadow-md hover:border-[#0277bd]/40 transition-all flex items-center gap-3.5"
+            >
+              <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 border border-teal-100">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Quality Guarantee</span>
+                <span className="text-slate-800 text-sm font-semibold">{product.warranty || "1 Year Manufacturer Warranty"}</span>
+              </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -370,7 +472,7 @@ export default function ProductDetails() {
                   <p className="text-gray-600 text-base md:text-lg leading-relaxed font-normal">
                     {currentTab.description}
                   </p>
-                  {currentTab.secondaryDescription && (
+                  {currentTab.secondaryDescription && typeof currentTab.secondaryDescription === 'string' && (
                     <p className="text-gray-500 text-sm md:text-base leading-relaxed pt-2 border-t border-slate-100">
                       {currentTab.secondaryDescription}
                     </p>
@@ -383,7 +485,10 @@ export default function ProductDetails() {
                     className="max-h-[340px] w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-500"
                   />
                   <button
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    onClick={() => {
+                      if (window.__lenis) window.__lenis.scrollTo(0, { duration: 1.2 });
+                      else window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                     className="absolute bottom-6 right-6 w-12 h-12 rounded-full bg-[#0277bd] hover:bg-[#01579b] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all cursor-pointer"
                     title="Scroll to Top"
                   >
@@ -410,7 +515,9 @@ export default function ProductDetails() {
                       <p className="text-gray-600 font-medium text-base leading-relaxed">
                         {typeof feat === 'string' 
                           ? feat 
-                          : (feat.heading ? `${feat.heading}: ${feat.description}` : feat.description)}
+                          : (feat.heading 
+                              ? `${feat.heading}${feat.description ? `: ${feat.description}` : ''}` 
+                              : (feat.description || (feat.key ? `${feat.key}: ${feat.value}` : '')))}
                       </p>
                     </div>
                   ))}
@@ -434,7 +541,9 @@ export default function ProductDetails() {
                           <p className="text-white/90 text-sm md:text-base leading-relaxed font-medium pt-2">
                             {typeof feat === 'string' 
                               ? feat 
-                              : (feat.heading ? `${feat.heading}: ${feat.description}` : feat.description)}
+                              : (feat.heading 
+                                  ? `${feat.heading}${feat.description ? `: ${feat.description}` : ''}` 
+                                  : (feat.description || (feat.key ? `${feat.key}: ${feat.value}` : '')))}
                           </p>
                         </div>
                       ))}
@@ -577,7 +686,10 @@ export default function ProductDetails() {
             </Link>
           </div>
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => {
+              if (window.__lenis) window.__lenis.scrollTo(0, { duration: 1.2 });
+              else window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className="absolute bottom-6 right-6 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer border border-white/20"
             title="Scroll to Top"
           >

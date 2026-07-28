@@ -1,12 +1,13 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Search, ChevronRight, ArrowLeft } from 'lucide-react';
 import api from '../services/api';
 import { motion } from 'framer-motion';
 import { getImageUrl } from '../utils';
 
 export default function Products() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const routeParams = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
@@ -14,8 +15,11 @@ export default function Products() {
   const [subcategories, setSubcategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const categoryFilter = searchParams.get('category');
-  const subcategoryFilter = searchParams.get('subcategory');
+  const rawCat = routeParams.categoryId || searchParams.get('category');
+  const rawSub = routeParams.subcategoryId || routeParams['*'] || searchParams.get('subcategory');
+
+  const categoryFilter = rawCat ? decodeURIComponent(rawCat) : null;
+  const subcategoryFilter = rawSub ? decodeURIComponent(rawSub) : null;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -69,7 +73,34 @@ export default function Products() {
   }, [categoryFilter, subcategoryFilter, products]);
 
   if (loading) {
-    return <div className="min-h-screen pt-40 pb-20 text-center text-gray-500 text-xl font-medium">Loading products...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 pt-28 pb-20 animate-pulse">
+        <div className="bg-[#0277bd] text-white py-24 mb-12 flex flex-col items-center justify-center text-center relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 w-full flex flex-col items-center space-y-4">
+            <div className="h-12 w-64 md:w-96 bg-white/20 rounded-2xl"></div>
+            <div className="h-5 w-80 md:w-1/2 bg-white/15 rounded-xl"></div>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <div key={n} className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xs space-y-4">
+                <div className="w-full aspect-square bg-slate-100 rounded-2xl overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-200/50 to-transparent animate-pulse"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-5 bg-slate-200 rounded-lg w-3/4 mx-auto"></div>
+                  <div className="h-4 bg-slate-100 rounded-md w-1/2 mx-auto"></div>
+                </div>
+                <div className="pt-2 flex justify-center">
+                  <div className="h-9 w-32 bg-slate-100 rounded-full"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -82,7 +113,7 @@ export default function Products() {
           {viewState === 'SUBCATEGORIES' && (
             <div className="w-full flex items-center justify-start mb-6 md:mb-0 md:absolute md:-top-8 md:left-6">
               <button 
-                onClick={() => setSearchParams({})} 
+                onClick={() => navigate('/products')} 
                 className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium transition-all bg-white/15 hover:bg-white/25 px-4 py-2 rounded-full border border-white/25 backdrop-blur-sm shadow-sm hover:scale-105 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" /> Back to Products
@@ -92,7 +123,7 @@ export default function Products() {
           {viewState === 'PRODUCTS' && activeCategory && (
             <div className="w-full flex items-center justify-start mb-6 md:mb-0 md:absolute md:-top-8 md:left-6">
               <button 
-                onClick={() => setSearchParams({ category: activeCategory.id })} 
+                onClick={() => navigate(`/products/category/${encodeURIComponent(activeCategory.id)}`)} 
                 className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium transition-all bg-white/15 hover:bg-white/25 px-4 py-2 rounded-full border border-white/25 backdrop-blur-sm shadow-sm hover:scale-105 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" /> Back to {activeCategory.name}
@@ -140,7 +171,7 @@ export default function Products() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
                 key={cat.id}
-                onClick={() => setSearchParams({ category: cat.id })}
+                onClick={() => navigate(`/products/category/${encodeURIComponent(cat.id)}`)}
                 className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer flex flex-col group border border-gray-100"
               >
                 <div className="p-8 pb-4 flex-grow flex items-center justify-center bg-white aspect-[4/3]">
@@ -173,7 +204,7 @@ export default function Products() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}
                 key={sub.id}
-                onClick={() => setSearchParams({ category: categoryFilter, subcategory: sub.id })}
+                onClick={() => navigate(`/products/category/${encodeURIComponent(categoryFilter)}/subcategory/${encodeURIComponent(sub.id)}`)}
                 className="bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-shadow cursor-pointer flex flex-col group border border-gray-100"
               >
                 <div className="p-8 pb-4 flex-grow flex items-center justify-center bg-white aspect-[4/3]">
