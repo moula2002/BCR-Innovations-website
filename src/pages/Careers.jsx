@@ -136,21 +136,35 @@ export default function Careers() {
     e.preventDefault();
     setSubmitting(true);
 
+    const payload = {
+      type: 'career',
+      firstName: applyForm.name,
+      email: applyForm.email,
+      phone: applyForm.phone,
+      experience: applyForm.experience,
+      jobTitle: selectedJob?.title || 'General Position',
+      department: selectedJob?.department || 'General',
+      subject: `[Job Application] ${selectedJob?.title || 'General Position'}`,
+      message: applyForm.note
+    };
+
     try {
+      // 1. Save data to MongoDB contacts collection via Backend Server API
+      try {
+        await api.post('/contacts', {
+          ...payload,
+          skipEmail: true
+        });
+      } catch (dbError) {
+        console.error("Error saving job application to database:", dbError);
+        // Continue to send email even if DB save fails
+      }
+
+      // 2. Send Email via Vercel Serverless Function
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'career',
-          firstName: applyForm.name,
-          email: applyForm.email,
-          phone: applyForm.phone,
-          experience: applyForm.experience,
-          jobTitle: selectedJob?.title || 'General Position',
-          department: selectedJob?.department || 'General',
-          subject: `[Job Application] ${selectedJob?.title || 'General Position'}`,
-          message: applyForm.note
-        })
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();

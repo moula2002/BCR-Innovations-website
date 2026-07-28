@@ -31,15 +31,27 @@ export default function Contact() {
     };
 
     try {
+      // 1. Save data to MongoDB contacts collection via Backend Server API
+      try {
+        await api.post('/contacts', {
+          ...payload,
+          skipEmail: true
+        });
+      } catch (dbError) {
+        console.error("Error saving contact to database:", dbError);
+        // Continue to send email even if DB save fails
+      }
+
+      // 2. Send Email via Vercel Serverless Function
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const emailData = await response.json();
 
-      if (response.ok && data.success) {
+      if (response.ok && emailData.success) {
         setSubmitStatus('success');
         reset();
       } else {
