@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, Heart } from 'lucide-react';
 import logoUrl from '../../assets/Logo.png';
 import api from '../../services/api';
 
@@ -20,7 +20,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-primary text-gray-300 pt-16 pb-8 border-t border-primary-dark">
+    <footer className="bg-primary text-white pt-16 pb-8 border-t border-primary-dark">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
         {/* Brand Info */}
         <div className="space-y-4">
@@ -30,20 +30,20 @@ export default function Footer() {
             </div>
             <span className="font-bold text-2xl text-white tracking-tight">BCR Innovations</span>
           </div>
-          <p className="text-gray-400 text-sm leading-relaxed">
+          <p className="text-white text-sm leading-relaxed">
             Leading provider of innovative industrial products and solutions. Quality standards certified and globally recognized for excellence.
           </p>
           <div className="flex gap-4 pt-2">
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors text-white">
+            <a href="#" className="w-10 h-10 rounded-full bg-[#1877F2] flex items-center justify-center text-white" aria-label="Facebook">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
             </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors text-white">
+            <a href="#" className="w-10 h-10 rounded-full bg-[#1DA1F2] flex items-center justify-center text-white" aria-label="Twitter">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
             </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors text-white">
+            <a href="#" className="w-10 h-10 rounded-full bg-[#0A66C2] flex items-center justify-center text-white" aria-label="LinkedIn">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
             </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors text-white">
+            <a href="#" className="w-10 h-10 rounded-full bg-[#E1306C] flex items-center justify-center text-white" aria-label="Instagram">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
             </a>
           </div>
@@ -79,7 +79,7 @@ export default function Footer() {
               </li>
             ))}
             {categories.length === 0 && (
-              <li><span className="text-gray-500">No categories found</span></li>
+              <li><span className="text-white">No categories found</span></li>
             )}
           </ul>
         </div>
@@ -107,9 +107,12 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-        <p>© {new Date().getFullYear()} BCR Innovations. All rights reserved.</p>
-        <div className="flex gap-6">
+      <div className="max-w-7xl mx-auto px-6 border-t border-primary-dark/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm">
+        <p className="text-white">© {new Date().getFullYear()} BCR Innovations. All rights reserved.</p>
+        <p className="text-white font-medium flex items-center gap-1.5">
+          Developed with <Heart className="w-4 h-4 text-red-500" fill="currentColor" /> by <span className="text-white font-bold">Innomatrics Technologies</span>
+        </p>
+        <div className="flex gap-6 text-white md:mr-16">
           <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
           <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
         </div>

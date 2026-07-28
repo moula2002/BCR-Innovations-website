@@ -78,7 +78,7 @@ export default function Contact() {
         <p className="text-white/80 max-w-2xl mx-auto">Get in touch with our team for inquiries, support, or partnership opportunities.</p>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-16">
+      <div className="max-w-7xl mx-auto px-6 py-12 md:py-16 grid md:grid-cols-2 gap-12 md:gap-16">
 
         {/* Contact Info & Map */}
         <motion.div
@@ -143,7 +143,7 @@ export default function Contact() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100"
+          className="bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-gray-100"
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
 
