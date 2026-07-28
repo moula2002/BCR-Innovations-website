@@ -1,5 +1,25 @@
 import { useParams, Link } from 'react-router-dom';
-import { Check, ArrowLeft, Send, PhoneCall, Package, Ruler, Box, ShieldCheck, Wrench, ChevronRight, Info } from 'lucide-react';
+import { 
+  Check, 
+  ArrowLeft, 
+  Send, 
+  Package, 
+  Ruler, 
+  Box, 
+  ShieldCheck, 
+  ChevronRight, 
+  Info,
+  LayoutGrid,
+  Sliders,
+  Layers,
+  Lightbulb,
+  Snowflake,
+  Wrench,
+  ArrowUp,
+  Maximize2,
+  CheckCircle2,
+  Mail
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
@@ -19,8 +39,7 @@ export default function ProductDetails() {
   const [subcategoryName, setSubcategoryName] = useState('');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('description');
-  const [isImageExpanded, setIsImageExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -66,8 +85,8 @@ export default function ProductDetails() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-32 flex flex-col items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-gray-500 font-medium tracking-wider uppercase text-sm">Loading Product...</p>
+        <div className="w-12 h-12 border-4 border-[#0277bd] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-gray-500 font-medium tracking-wider uppercase text-sm">Loading Product Details...</p>
       </div>
     );
   }
@@ -76,8 +95,8 @@ export default function ProductDetails() {
     return (
       <div className="max-w-7xl mx-auto px-6 py-32 text-center">
         <h1 className="text-4xl font-extrabold text-gray-900 mb-6">Product Not Found</h1>
-        <p className="text-gray-500 mb-8 max-w-md mx-auto">The product you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
-        <Link to="/products" className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-primary text-white font-bold rounded-full hover:bg-primary-dark transition-all hover:shadow-lg">
+        <p className="text-gray-500 mb-8 max-w-md mx-auto">The product you are looking for might have been removed or is temporarily unavailable.</p>
+        <Link to="/products" className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-[#0277bd] text-white font-bold rounded-full hover:bg-[#01579b] transition-all hover:shadow-lg">
           <ArrowLeft className="w-5 h-5" /> Return to Catalog
         </Link>
       </div>
@@ -86,228 +105,346 @@ export default function ProductDetails() {
 
   const whatsappMessage = encodeURIComponent(`Hello! I'm interested in the ${product.name}. Could you provide more details?`);
 
+  const getTabIcon = (name) => {
+    const lower = (name || '').toLowerCase();
+    if (lower.includes('overview')) return <LayoutGrid className="w-4 h-4" />;
+    if (lower.includes('design')) return <Sliders className="w-4 h-4" />;
+    if (lower.includes('material')) return <Layers className="w-4 h-4" />;
+    if (lower.includes('light')) return <Lightbulb className="w-4 h-4" />;
+    if (lower.includes('refrigerat') || lower.includes('cool')) return <Snowflake className="w-4 h-4" />;
+    if (lower.includes('spec')) return <Wrench className="w-4 h-4" />;
+    return <Info className="w-4 h-4" />;
+  };
+
+  const getFeatureIcon = (feature, index) => {
+    const text = (typeof feature === 'string' ? feature : feature?.heading || feature?.description || '').toLowerCase();
+    if (text.includes('light') || text.includes('led')) return <Lightbulb className="w-5 h-5" />;
+    if (text.includes('control') || text.includes('temp') || text.includes('digital')) return <Sliders className="w-5 h-5" />;
+    if (text.includes('material') || text.includes('corian') || text.includes('panel')) return <Maximize2 className="w-5 h-5" />;
+    if (text.includes('top') || text.includes('glass')) return <Sliders className="w-5 h-5" />;
+    if (text.includes('steel') || text.includes('finish') || text.includes('grade')) return <CheckCircle2 className="w-5 h-5" />;
+    
+    const icons = [
+      <LayoutGrid className="w-5 h-5" />,
+      <Maximize2 className="w-5 h-5" />,
+      <Sliders className="w-5 h-5" />,
+      <CheckCircle2 className="w-5 h-5" />
+    ];
+    return icons[index % icons.length];
+  };
+
+  const hasCustomTabs = product.tabs && product.tabs.length > 0;
+
+  const defaultTabs = [
+    {
+      id: 'overview',
+      name: 'Overview',
+      label: 'Overview',
+      title: 'Timeless style',
+      type: 'overview',
+      icon: <LayoutGrid className="w-4 h-4" />,
+      description: product.description || `${product.name} is a professional, high-performance solution with unique design and high-level technical features, offering a wide range of functionality to suit your needs. A perfect balance between aesthetics and functionality.`,
+      secondaryDescription: product.specifications || "Refrigeration is equalized on all display levels where the air flow does not affect the product. This refrigeration system has a high humidity level which favours correct conservation of the displayed products.",
+      image: product.image
+    },
+    {
+      id: 'design',
+      name: 'Design',
+      label: 'Design',
+      title: 'Ergonomic & Modern Design',
+      type: 'overview',
+      icon: <Sliders className="w-4 h-4" />,
+      description: `Crafted with modern engineering principles, ${product.name} blends seamless visual elegance with heavy-duty commercial reliability. Designed for maximum usability, visibility, and operational efficiency.`,
+      secondaryDescription: "Featuring precision glass construction, clear sightlines, and refined architectural styling to showcase your items in the best possible light.",
+      image: product.image
+    },
+    {
+      id: 'material',
+      name: 'Material',
+      label: 'Material',
+      title: 'Material',
+      type: 'material',
+      icon: <Layers className="w-4 h-4" />,
+      features: [
+        "The material is fundamental for every planner or designer.",
+        product.material ? `Front decorative panel and frame: ${product.material}.` : "Front decorative panel is made of corian.",
+        "Unit top is made of ultra-clear heavy duty glass.",
+        "AISI 304 food grade stainless steel with matte finish."
+      ]
+    },
+    {
+      id: 'lighting',
+      name: 'Lighting',
+      label: 'Lighting',
+      title: 'Lighting',
+      type: 'lighting',
+      icon: <Lightbulb className="w-4 h-4" />,
+      image: product.image,
+      features: [
+        "Light is essential for a proper display of products; this is why Williams choose to install an innovative indirect lighting system with no-spot LED strips, perfectly integrated with the display.",
+        "The visual appeal of food and drink merchandise is significantly enhanced by smart bright, energy efficient LED lighting.",
+        "Electronic digital controller of Italian make is used for precise control and display of the temperature of the food items.",
+        "Novel design of extrusion where LED strips are located at the top with optional colours white/neutral white."
+      ]
+    },
+    {
+      id: 'refrigeration',
+      name: 'Refrigeration',
+      label: 'Refrigeration',
+      title: 'Advanced Refrigeration & Climate Control',
+      type: 'overview',
+      icon: <Snowflake className="w-4 h-4" />,
+      description: "Equalized refrigeration across all levels ensures consistent temperature distribution without drying out sensitive products. Designed with high humidity conservation technology.",
+      secondaryDescription: product.capacity ? `Capacity: ${product.capacity}. Built for continuous high-demand operation with maximum energy savings.` : "Built for continuous high-demand commercial operation with maximum energy efficiency.",
+      image: product.image
+    }
+  ];
+
+  const formattedCustomTabs = (product.tabs || []).map((tab, idx) => {
+    const tabName = tab.name || `Tab ${idx + 1}`;
+    const lowerName = tabName.toLowerCase();
+    let type = 'overview';
+    if (lowerName.includes('material')) type = 'material';
+    else if (lowerName.includes('light')) type = 'lighting';
+
+    return {
+      id: `tab-${idx}`,
+      name: tabName,
+      label: tabName,
+      title: tab.title || tabName,
+      type: type,
+      icon: getTabIcon(tabName),
+      description: tab.description || '',
+      secondaryDescription: '',
+      image: tab.image || product.image,
+      features: tab.features && tab.features.length > 0 ? tab.features : [
+        "High-grade engineering and quality materials.",
+        "Built to strict industrial standards for long-lasting durability.",
+        "Precision craftsmanship for seamless operation.",
+        "Easy maintenance and hygienic clean surface design."
+      ]
+    };
+  });
+
+  const displayTabs = hasCustomTabs ? formattedCustomTabs : defaultTabs;
+  const currentTab = displayTabs.find(t => t.id === activeTab) || displayTabs[0];
+
   return (
-    <div className="bg-transparent min-h-screen pb-24">
-      {/* Breadcrumb Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-100 pt-28 pb-6 md:pt-36 md:pb-6 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center gap-2 text-sm font-medium text-gray-500">
-          <Link to="/products" className="hover:text-primary transition-colors flex items-center gap-1">
-            <ArrowLeft className="w-4 h-4" /> Products
-          </Link>
-          <ChevronRight className="w-4 h-4 text-gray-300" />
-          <Link to={`/products?category=${product.category}`} className="hover:text-primary transition-colors">
-            {categoryName || 'Category'}
-          </Link>
-          {subcategoryName && (
-            <>
-              <ChevronRight className="w-4 h-4 text-gray-300" />
-              <Link to={`/products?category=${product.category}&subcategory=${product.subcategory}`} className="hover:text-primary transition-colors">
-                {subcategoryName}
-              </Link>
-            </>
-          )}
-          <ChevronRight className="w-4 h-4 text-gray-300" />
-          <span className="text-gray-900 truncate max-w-[200px] sm:max-w-none">{product.name}</span>
+    <div className="bg-[#f8fafc] min-h-screen pb-24 font-sans text-gray-800">
+      {/* Official Logo Primary Blue Hero Banner */}
+      <div className="bg-[#0277bd] text-white pt-32 pb-16 md:pt-44 md:pb-20 shadow-md relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          {/* Back to Category Link */}
+          <div className="mb-6 flex items-center justify-start md:absolute md:-top-10 md:left-6">
+            <Link 
+              to={product.category ? `/products?category=${product.category}` : "/products"} 
+              className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium transition-all bg-white/15 hover:bg-white/25 px-5 py-2.5 rounded-full border border-white/25 backdrop-blur-sm shadow-sm hover:scale-105"
+            >
+              <ArrowLeft className="w-4 h-4" /> {categoryName ? `Back to ${categoryName}` : 'Back to Collection'}
+            </Link>
+          </div>
+
+          <div className="text-center pt-4 md:pt-8">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold uppercase tracking-wide text-white mb-10">
+              {product.name}
+            </h1>
+            <div className="flex flex-wrap items-center justify-center gap-3.5 px-4 max-w-4xl mx-auto">
+              {displayTabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-6 py-3 rounded-full text-sm md:text-base font-medium flex items-center gap-2.5 transition-all duration-300 ${
+                      isActive
+                        ? 'bg-white text-[#0277bd] shadow-xl scale-105 font-bold'
+                        : 'bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm'
+                    }`}
+                  >
+                    {tab.icon}
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-2 gap-16 mb-24">
-          {/* Product Image Gallery */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-6"
-          >
-            <div className="aspect-square bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-xl shadow-gray-200/50 relative group p-8 flex items-center justify-center cursor-zoom-in" onClick={() => setIsImageExpanded(true)}>
-              <div className="absolute inset-0 bg-gradient-to-tr from-gray-50 to-white -z-10"></div>
-              <img
-                src={getImageUrl(product.image)}
-                alt={product.name}
-                className="w-full h-full object-contain object-center drop-shadow-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
-              />
-              <div className="absolute top-6 left-6 flex flex-col gap-2">
-                {product.brands && (
-                  <span className="bg-gray-900/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm tracking-wider uppercase">
-                    {product.brands}
-                  </span>
-                )}
-              </div>
-            </div>
-          </motion.div>
+      <div className="max-w-7xl mx-auto px-6 pt-12">
+        {/* Breadcrumb & Specs Card */}
+        <div className="bg-white rounded-[24px] p-6 md:p-8 border border-slate-100 shadow-sm mb-12 space-y-4">
+          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500 font-medium">
+            <Link to="/products" className="hover:text-[#0277bd] transition-colors">Products</Link>
+            <ChevronRight className="w-4 h-4 text-gray-300" />
+            <Link to={`/products?category=${product.category}`} className="text-[#0277bd] font-semibold hover:underline">
+              {categoryName || 'Display Cabinets'}
+            </Link>
+            {subcategoryName && (
+              <>
+                <ChevronRight className="w-4 h-4 text-gray-300" />
+                <span className="text-gray-600 font-medium">{subcategoryName}</span>
+              </>
+            )}
+          </div>
 
-          {/* Product Info */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex flex-col"
-          >
-            <div className="mb-4 flex flex-wrap items-center gap-3">
-              <span className="text-primary font-bold tracking-widest text-sm uppercase bg-primary/10 px-3 py-1 rounded-full">
-                {categoryName}
+          <div className="w-full pt-1">
+            <div className="bg-[#f0f4f9] text-slate-700 text-xs md:text-sm font-medium px-4 py-2.5 rounded-full inline-flex items-center gap-2.5 max-w-full border border-slate-200/50">
+              <Package className="w-4 h-4 text-[#0277bd] shrink-0" />
+              <span className="truncate md:whitespace-normal">
+                {product.material 
+                  ? `The material is fundamental for every planner or designer. Front decorative panel is made of corian. Unit top is made of glass. ${product.material}`
+                  : "The material is fundamental for every planner or designer. Front decorative panel is made of corian. Unit top is made of glass. AISI 304 food grade stainless steel with matte finish."
+                }
               </span>
-              {product.brands && <span className="bg-orange-500/10 text-orange-600 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">{product.brands}</span>}
-              {product.sku && <span className="text-gray-400 text-sm font-medium">SKU: {product.sku}</span>}
             </div>
+          </div>
 
-            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tight">{product.name}</h1>
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <span className="bg-[#f0f4f9] text-slate-700 text-xs md:text-sm font-medium px-4 py-2 rounded-full flex items-center gap-2 border border-slate-200/50">
+              <Ruler className="w-4 h-4 text-[#0277bd]" />
+              <span>{product.size || "Customizable as per Requirement"}</span>
+            </span>
+            <span className="bg-[#f0f4f9] text-slate-700 text-xs md:text-sm font-medium px-4 py-2 rounded-full flex items-center gap-2 border border-slate-200/50">
+              <Box className="w-4 h-4 text-[#0277bd]" />
+              <span>{product.capacity || "3 Deck, 6 Trays / 9 Trays Capacity"}</span>
+            </span>
+            <span className="bg-[#f0f4f9] text-slate-700 text-xs md:text-sm font-medium px-4 py-2 rounded-full flex items-center gap-2 border border-slate-200/50">
+              <ShieldCheck className="w-4 h-4 text-[#0277bd]" />
+              <span>{product.warranty || "1 Year Manufacturer Warranty"}</span>
+            </span>
+          </div>
+        </div>
 
-            {/* Quick Specs Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {product.material && (
-                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
-                  <div className="bg-gray-50 p-2 rounded-xl text-gray-500"><Package className="w-5 h-5" /></div>
-                  <div><p className="text-xs text-gray-500 font-medium mb-0.5">Material</p><p className="font-bold text-gray-900 text-sm">{product.material}</p></div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentTab.id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            className="mb-16"
+          >
+            {currentTab.type === 'overview' && (
+              <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <div className="space-y-6">
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight leading-tight">
+                    {currentTab.title}
+                  </h2>
+                  <p className="text-gray-600 text-base md:text-lg leading-relaxed font-normal">
+                    {currentTab.description}
+                  </p>
+                  {currentTab.secondaryDescription && (
+                    <p className="text-gray-500 text-sm md:text-base leading-relaxed pt-2 border-t border-slate-100">
+                      {currentTab.secondaryDescription}
+                    </p>
+                  )}
                 </div>
-              )}
-              {product.size && (
-                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
-                  <div className="bg-gray-50 p-2 rounded-xl text-gray-500"><Ruler className="w-5 h-5" /></div>
-                  <div><p className="text-xs text-gray-500 font-medium mb-0.5">Dimensions</p><p className="font-bold text-gray-900 text-sm">{product.size}</p></div>
+                <div className="bg-[#f4f7fa] rounded-[32px] p-8 md:p-12 relative border border-slate-100 flex items-center justify-center min-h-[380px] group shadow-sm">
+                  <img
+                    src={getImageUrl(currentTab.image || product.image)}
+                    alt={currentTab.title}
+                    className="max-h-[340px] w-auto object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <button
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="absolute bottom-6 right-6 w-12 h-12 rounded-full bg-[#0277bd] hover:bg-[#01579b] text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all cursor-pointer"
+                    title="Scroll to Top"
+                  >
+                    <ArrowUp className="w-5 h-5" />
+                  </button>
                 </div>
-              )}
-              {product.capacity && (
-                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
-                  <div className="bg-gray-50 p-2 rounded-xl text-gray-500"><Box className="w-5 h-5" /></div>
-                  <div><p className="text-xs text-gray-500 font-medium mb-0.5">Capacity</p><p className="font-bold text-gray-900 text-sm">{product.capacity}</p></div>
-                </div>
-              )}
-              {product.warranty && (
-                <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-start gap-3">
-                  <div className="bg-gray-50 p-2 rounded-xl text-gray-500"><ShieldCheck className="w-5 h-5" /></div>
-                  <div><p className="text-xs text-gray-500 font-medium mb-0.5">Warranty</p><p className="font-bold text-gray-900 text-sm">{product.warranty}</p></div>
-                </div>
-              )}
-            </div>
-
-            {/* Interactive Tabs */}
-            {(() => {
-              const availableTabs = [
-                { id: 'description', label: 'description', content: product.description },
-                { id: 'specifications', label: 'specifications', content: product.specifications },
-                { id: 'applications', label: 'applications', content: product.applications },
-                ...(product.tabs || []).map((t, idx) => ({
-                  id: `custom-${idx}`,
-                  label: t.name,
-                  isCustom: true,
-                  tabData: t
-                }))
-              ].filter(t => t.id === 'description' || t.content || t.isCustom);
-
-              // Reset activeTab if it's no longer valid
-              if (!availableTabs.some(t => t.id === activeTab)) {
-                setActiveTab('description');
-              }
-
-              return (
-                <div className="mb-8">
-                  <div className="flex flex-wrap gap-6 border-b border-gray-200 mb-6">
-                    {availableTabs.map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`pb-4 text-sm font-bold capitalize transition-colors relative ${activeTab === tab.id ? 'text-primary' : 'text-gray-400 hover:text-gray-600'}`}
-                      >
-                        {tab.label}
-                        {activeTab === tab.id && (
-                          <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  <AnimatePresence mode="wait">
-                    <motion.div 
-                      key={activeTab}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-gray-600 leading-relaxed min-h-[120px]"
-                    >
-                      {activeTab === 'description' && <p>{product.description}</p>}
-                      {activeTab === 'specifications' && <p className="whitespace-pre-wrap">{product.specifications}</p>}
-                      {activeTab === 'applications' && <p className="whitespace-pre-wrap">{product.applications}</p>}
-                      
-                      {activeTab.startsWith('custom-') && (() => {
-                        const idx = parseInt(activeTab.split('-')[1]);
-                        const tab = product.tabs?.[idx];
-                        if (!tab) return null;
-                        return (
-                          <div className="space-y-6">
-                            {tab.title && <h3 className="text-xl font-bold text-gray-900 mb-4">{tab.title}</h3>}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                              <div className="space-y-6">
-                                {tab.description && <p className="whitespace-pre-wrap text-gray-600 leading-relaxed">{tab.description}</p>}
-                                {tab.features && tab.features.length > 0 && (
-                                  <div className="space-y-4">
-                                    {tab.features.map((feat, fIdx) => (
-                                      <div key={fIdx} className="bg-white/50 backdrop-blur-md p-5 rounded-2xl border border-white flex gap-4 shadow-[0_4px_30px_rgba(0,0,0,0.01)] hover:border-gray-200 transition-colors">
-                                        <div className="flex-1">
-                                          {feat.heading && <h4 className="font-bold text-gray-900 mb-1">{feat.heading}</h4>}
-                                          {feat.description && <p className="text-sm text-gray-500 leading-relaxed">{feat.description}</p>}
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                              {tab.image && (
-                                <div className="rounded-3xl overflow-hidden border border-white shadow-lg bg-white/30 p-2 max-w-md">
-                                  <img src={getImageUrl(tab.image)} alt={tab.title || tab.name} className="w-full h-auto object-cover rounded-2xl" />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              );
-            })()}
-
-            {product.features && product.features.length > 0 && (
-              <div className="mb-10">
-                <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2"><Check className="w-5 h-5 text-primary" /> Core Features</h3>
-                <ul className="grid sm:grid-cols-2 gap-y-3 gap-x-6">
-                  {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm text-gray-700">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0"></div>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
             )}
 
-            {/* Action Bar */}
-            <div className="mt-auto bg-white p-6 rounded-3xl border border-gray-100 shadow-lg shadow-gray-200/50 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-
-              <div className="relative z-10 flex flex-col sm:flex-row gap-3 w-full sm:w-auto ml-auto">
-                <a
-                  href={`https://wa.me/1234567890?text=${whatsappMessage}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-4 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-2xl font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2 w-full sm:w-auto"
-                >
-                  <WhatsAppIcon className="w-5 h-5" /> WhatsApp
-                </a>
-                <Link
-                  to={`/contact?product=${encodeURIComponent(product.name)}`}
-                  className="px-8 py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2 w-full sm:w-auto"
-                >
-                  <Send className="w-4 h-4" /> Request Quote
-                </Link>
+            {currentTab.type === 'material' && (
+              <div className="py-4">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+                  {currentTab.title || 'Material'}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                  {currentTab.features.map((feat, fIdx) => (
+                    <div
+                      key={fIdx}
+                      className="bg-[#f3f5f8] rounded-3xl p-8 border border-slate-100/80 flex flex-col justify-between items-start min-h-[160px] shadow-sm hover:shadow-md transition-all duration-300"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-[#0277bd]/10 text-[#0277bd] flex items-center justify-center mb-6">
+                        {getFeatureIcon(feat, fIdx)}
+                      </div>
+                      <p className="text-gray-600 font-medium text-base leading-relaxed">
+                        {typeof feat === 'string' 
+                          ? feat 
+                          : (feat.heading ? `${feat.heading}: ${feat.description}` : feat.description)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {currentTab.type === 'lighting' && (
+              <div className="bg-[#0277bd] rounded-[32px] p-8 md:p-14 text-white shadow-xl border border-blue-400/20">
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                  <div className="space-y-8">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white">
+                      {currentTab.title || 'Lighting'}
+                    </h2>
+                    <div className="space-y-6">
+                      {currentTab.features.map((feat, fIdx) => (
+                        <div key={fIdx} className="flex items-start gap-4">
+                          <div className="w-11 h-11 rounded-full bg-white/20 backdrop-blur-md shrink-0 flex items-center justify-center text-white border border-white/20 shadow-sm">
+                            {getFeatureIcon(feat, fIdx)}
+                          </div>
+                          <p className="text-white/90 text-sm md:text-base leading-relaxed font-medium pt-2">
+                            {typeof feat === 'string' 
+                              ? feat 
+                              : (feat.heading ? `${feat.heading}: ${feat.description}` : feat.description)}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-[32px] p-8 border border-white/20 flex items-center justify-center min-h-[350px] shadow-2xl">
+                    <img
+                      src={getImageUrl(currentTab.image || product.image)}
+                      alt={currentTab.title}
+                      className="max-h-[320px] w-auto object-contain drop-shadow-2xl"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </motion.div>
+        </AnimatePresence>
+
+        {/* Action Quote / Contact CTA Bar */}
+        <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-md flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900 mb-1">Interested in this product?</h3>
+            <p className="text-gray-500 text-sm">Contact our technical team for custom quotes, dimensions, and availability.</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto shrink-0">
+            <a
+              href={`https://wa.me/1234567890?text=${whatsappMessage}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3.5 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-2xl font-bold transition-all shadow-md flex items-center justify-center gap-2"
+            >
+              <WhatsAppIcon className="w-5 h-5" /> WhatsApp Inquiry
+            </a>
+            <Link
+              to={`/contact?product=${encodeURIComponent(product.name)}&image=${encodeURIComponent(product.image || '')}`}
+              className="px-8 py-3.5 bg-[#0277bd] hover:bg-[#01579b] text-white rounded-2xl font-bold transition-all shadow-md flex items-center justify-center gap-2"
+            >
+              <Send className="w-4 h-4" /> Request Quote
+            </Link>
+          </div>
         </div>
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div className="mt-24 max-w-7xl mx-auto border-t border-gray-200 pt-16">
+          <div className="border-t border-slate-200 pt-16 mb-16">
             <h2 className="text-3xl font-extrabold text-gray-900 mb-8">Related Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((related, index) => (
@@ -316,25 +453,25 @@ export default function ProductDetails() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   key={related._id}
-                  className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all group flex flex-col"
+                  className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all group flex flex-col"
                 >
-                  <Link to={`/products/${related._id}`} className="block relative aspect-[4/3] overflow-hidden bg-gray-100">
+                  <Link to={`/products/${related._id}`} className="block relative aspect-[4/3] overflow-hidden bg-slate-50 p-4">
                     <img
                       src={getImageUrl(related.image)}
                       alt={related.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-primary shadow-sm">
+                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-[#0277bd] shadow-sm">
                       {categories.find(c => c.id === related.category)?.name || related.category}
                     </div>
                   </Link>
                   <div className="p-5 flex flex-col flex-grow">
                     <div className="text-xs text-gray-400 mb-1 font-medium">{related.brands}</div>
                     <Link to={`/products/${related._id}`}>
-                      <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors line-clamp-2">{related.name}</h3>
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#0277bd] transition-colors line-clamp-2">{related.name}</h3>
                     </Link>
                     <div className="flex items-center justify-end mt-auto pt-4">
-                      <Link to={`/products/${related._id}`} className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                      <Link to={`/products/${related._id}`} className="w-8 h-8 rounded-full bg-[#0277bd]/10 text-[#0277bd] flex items-center justify-center group-hover:bg-[#0277bd] group-hover:text-white transition-colors">
                         <ChevronRight className="w-4 h-4" />
                       </Link>
                     </div>
@@ -345,6 +482,37 @@ export default function ProductDetails() {
           </div>
         )}
 
+        {/* Need a Help Section */}
+        <div className="bg-[#0277bd] text-white rounded-[32px] p-10 md:p-16 mt-8 mb-12 text-center relative overflow-hidden shadow-xl border border-blue-400/20">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-3">
+            Need a Help?
+          </h2>
+          <p className="text-white/80 text-base md:text-lg mb-8 font-normal">
+            Write to us now
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mb-8 text-white font-medium text-sm md:text-base">
+            <a href="mailto:bcrinnovations2026@gmail.com" className="flex items-center gap-2 hover:text-white/80 transition-colors">
+              <Mail className="w-5 h-5 text-white/90" />
+              <span>bcrinnovations2026@gmail.com</span>
+            </a>
+            <a href="mailto:sales@bcrinnovations.com" className="flex items-center gap-2 hover:text-white/80 transition-colors">
+              <Mail className="w-5 h-5 text-white/90" />
+              <span>sales@bcrinnovations.com</span>
+            </a>
+          </div>
+          <div className="flex items-center justify-center">
+            <Link to={`/contact?product=${encodeURIComponent(product.name)}&image=${encodeURIComponent(product.image || '')}`} className="bg-[#f0f4f8] hover:bg-white text-gray-800 font-semibold px-8 py-3.5 rounded-full transition-all shadow-md hover:shadow-lg hover:scale-105 inline-flex items-center justify-center text-sm md:text-base">
+              Contact Our Team
+            </Link>
+          </div>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="absolute bottom-6 right-6 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white flex items-center justify-center transition-all cursor-pointer border border-white/20"
+            title="Scroll to Top"
+          >
+            <ArrowUp className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   );

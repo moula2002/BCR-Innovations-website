@@ -1,14 +1,16 @@
-import { Mail, MapPin, Phone, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Loader2, CheckCircle2, AlertCircle, Package } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import { motion } from 'framer-motion';
+import { getImageUrl } from '../utils';
 
 export default function Contact() {
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
   const [searchParams] = useSearchParams();
   const productName = searchParams.get('product');
+  const productImage = searchParams.get('image');
 
   useEffect(() => {
     if (productName) {
@@ -47,10 +49,10 @@ export default function Contact() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="bg-gray-900 text-white pt-32 pb-20 px-6 text-center md:pt-40"
+        className="bg-[#0277bd] text-white pt-32 pb-20 px-6 text-center md:pt-40"
       >
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Contact Us</h1>
-        <p className="text-gray-400 max-w-2xl mx-auto">Get in touch with our team for inquiries, support, or partnership opportunities.</p>
+        <p className="text-white/80 max-w-2xl mx-auto">Get in touch with our team for inquiries, support, or partnership opportunities.</p>
       </motion.div>
 
       <div className="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-16">
@@ -67,7 +69,7 @@ export default function Contact() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Our Headquarters</h2>
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[#0277bd]/10 flex items-center justify-center text-[#0277bd] shrink-0">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
@@ -77,7 +79,7 @@ export default function Contact() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[#0277bd]/10 flex items-center justify-center text-[#0277bd] shrink-0">
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
@@ -87,7 +89,7 @@ export default function Contact() {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[#0277bd]/10 flex items-center justify-center text-[#0277bd] shrink-0">
                   <Mail className="w-6 h-6" />
                 </div>
                 <div>
@@ -121,6 +123,27 @@ export default function Contact() {
           className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100"
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+
+          {/* Selected Product Card Banner inside Form */}
+          {(productName || productImage) && (
+            <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-[#0277bd]/5 to-slate-50 border border-[#0277bd]/20 flex items-center gap-4 shadow-sm">
+              {productImage ? (
+                <div className="w-16 h-16 rounded-xl bg-white p-2 shrink-0 border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden">
+                  <img src={getImageUrl(productImage)} alt={productName || 'Product'} className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <div className="w-14 h-14 rounded-xl bg-[#0277bd]/10 text-[#0277bd] flex items-center justify-center shrink-0">
+                  <Package className="w-7 h-7" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="inline-block px-2.5 py-0.5 rounded-full bg-[#0277bd]/10 text-[#0277bd] text-[11px] font-bold uppercase tracking-wider mb-1">
+                  Inquiring Product
+                </div>
+                <h4 className="font-bold text-gray-900 truncate text-base md:text-lg">{productName || 'Selected Product'}</h4>
+              </div>
+            </div>
+          )}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">

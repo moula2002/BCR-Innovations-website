@@ -75,19 +75,29 @@ export default function Products() {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-20">
       {/* Dynamic Header Block */}
-      <div className="bg-[#4b77b7] text-white py-24 mb-12 flex flex-col items-center justify-center text-center">
-        <div className="max-w-4xl mx-auto px-6 flex flex-col items-center">
+      <div className="bg-[#0277bd] text-white py-24 mb-12 flex flex-col items-center justify-center text-center relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 w-full relative z-10 flex flex-col items-center">
 
-          {/* Breadcrumbs / Back button */}
+          {/* Breadcrumbs / Back button (Moved to top-left corner) */}
           {viewState === 'SUBCATEGORIES' && (
-            <button onClick={() => setSearchParams({})} className="flex items-center text-white/80 hover:text-white transition-colors mb-8 text-sm font-medium">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Products
-            </button>
+            <div className="w-full flex items-center justify-start mb-6 md:mb-0 md:absolute md:-top-8 md:left-6">
+              <button 
+                onClick={() => setSearchParams({})} 
+                className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium transition-all bg-white/15 hover:bg-white/25 px-4 py-2 rounded-full border border-white/25 backdrop-blur-sm shadow-sm hover:scale-105 cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to Products
+              </button>
+            </div>
           )}
           {viewState === 'PRODUCTS' && activeCategory && (
-            <button onClick={() => setSearchParams({ category: activeCategory.id })} className="flex items-center text-white/80 hover:text-white transition-colors mb-8 text-sm font-medium">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to {activeCategory.name}
-            </button>
+            <div className="w-full flex items-center justify-start mb-6 md:mb-0 md:absolute md:-top-8 md:left-6">
+              <button 
+                onClick={() => setSearchParams({ category: activeCategory.id })} 
+                className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium transition-all bg-white/15 hover:bg-white/25 px-4 py-2 rounded-full border border-white/25 backdrop-blur-sm shadow-sm hover:scale-105 cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to {activeCategory.name}
+              </button>
+            </div>
           )}
 
           <motion.h1
@@ -146,7 +156,7 @@ export default function Products() {
                     <p className="text-gray-500 text-sm mb-6 line-clamp-3">{cat.description}</p>
                   )}
                   <div className="mt-auto">
-                    <button className="px-8 py-2.5 rounded-full border border-blue-100 text-[#4b77b7] font-semibold text-sm group-hover:bg-[#4b77b7] group-hover:border-[#4b77b7] group-hover:text-white transition-all duration-300 w-full md:w-auto">
+                    <button className="px-8 py-2.5 rounded-full border border-blue-100 text-[#0277bd] font-semibold text-sm group-hover:bg-[#0277bd] group-hover:border-[#0277bd] group-hover:text-white transition-all duration-300 w-full md:w-auto">
                       View Range
                     </button>
                   </div>
@@ -179,7 +189,7 @@ export default function Products() {
                     <p className="text-gray-500 text-sm mb-6 line-clamp-3">{sub.description}</p>
                   )}
                   <div className="mt-auto">
-                    <button className="px-8 py-2.5 rounded-full border border-blue-100 text-[#4b77b7] font-semibold text-sm group-hover:bg-[#4b77b7] group-hover:border-[#4b77b7] group-hover:text-white transition-all duration-300 w-full md:w-auto">
+                    <button className="px-8 py-2.5 rounded-full border border-blue-100 text-[#0277bd] font-semibold text-sm group-hover:bg-[#0277bd] group-hover:border-[#0277bd] group-hover:text-white transition-all duration-300 w-full md:w-auto">
                       View Range
                     </button>
                   </div>
@@ -213,10 +223,10 @@ export default function Products() {
                     </Link>
                     <div className="text-center flex flex-col flex-grow">
                       <Link to={`/products/${product._id}`}>
-                        <h3 className="text-lg font-bold text-gray-900 mb-6 group-hover:text-[#4b77b7] transition-colors line-clamp-2">{product.name}</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-6 group-hover:text-[#0277bd] transition-colors line-clamp-2">{product.name}</h3>
                       </Link>
                       <div className="mt-auto">
-                        <Link to={`/products/${product._id}`} className="inline-block px-6 py-2.5 rounded-full border border-blue-100 text-[#4b77b7] font-semibold text-xs uppercase tracking-wider group-hover:bg-[#4b77b7] group-hover:border-[#4b77b7] group-hover:text-white transition-all duration-300">
+                        <Link to={`/products/${product._id}`} className="inline-block px-6 py-2.5 rounded-full border border-blue-100 text-[#0277bd] font-semibold text-xs uppercase tracking-wider group-hover:bg-[#0277bd] group-hover:border-[#0277bd] group-hover:text-white transition-all duration-300">
                           Product Details
                         </Link>
                       </div>
