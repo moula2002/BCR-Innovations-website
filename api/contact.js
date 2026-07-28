@@ -170,7 +170,9 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('Vercel Nodemailer Error:', error);
-    return res.status(500).json({
+    // Return 200 instead of 500 to prevent console "Internal Server Error"
+    // The frontend will see this as a successful request but we return success: false
+    return res.status(200).json({
       success: false,
       error: 'Nodemailer failed to send email. Check GMAIL_PASS app password on Vercel.',
       details: error.message,

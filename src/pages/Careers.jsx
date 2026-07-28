@@ -137,7 +137,7 @@ export default function Careers() {
     setSubmitting(true);
 
     try {
-      await fetch('/api/contact', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -152,11 +152,18 @@ export default function Careers() {
           message: applyForm.note
         })
       });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setSubmitted(true);
+      } else {
+        alert(data.error || 'Failed to submit application. Please check your connection or try again later.');
+      }
     } catch (err) {
       console.error('Vercel Nodemailer application submit error:', err);
+      alert('Network error occurred. Please try again.');
     } finally {
       setSubmitting(false);
-      setSubmitted(true);
     }
   };
 

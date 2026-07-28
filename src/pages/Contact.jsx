@@ -37,7 +37,9 @@ export default function Contact() {
         body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         setSubmitStatus('success');
         reset();
       } else {
