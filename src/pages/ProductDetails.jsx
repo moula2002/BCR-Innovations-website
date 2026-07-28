@@ -133,6 +133,41 @@ export default function ProductDetails() {
     return icons[index % icons.length];
   };
 
+  const getFormattedSpecifications = (specs) => {
+    if (!specs) return [];
+    if (Array.isArray(specs)) {
+      return specs.map(item => {
+        if (typeof item === 'object' && item !== null) {
+          return { key: item.key || item.name || '', value: item.value || item.val || '' };
+        }
+        return { key: 'Specification', value: String(item) };
+      }).filter(s => s.key || s.value);
+    }
+    if (typeof specs === 'string') {
+      const trimmed = specs.trim();
+      if (!trimmed) return [];
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return getFormattedSpecifications(parsed);
+        if (typeof parsed === 'object' && parsed !== null) {
+          return Object.entries(parsed).map(([key, value]) => ({ key, value: String(value) }));
+        }
+      } catch {
+        const lines = trimmed.split('\n').filter(l => l.trim());
+        return lines.map(line => {
+          const colonIdx = line.indexOf(':');
+          if (colonIdx > -1) {
+            return { key: line.substring(0, colonIdx).trim(), value: line.substring(colonIdx + 1).trim() };
+          }
+          return { key: 'Details', value: line.trim() };
+        });
+      }
+    }
+    return [];
+  };
+
+  const specificationsList = product ? getFormattedSpecifications(product.specifications) : [];
+
   const hasCustomTabs = product.tabs && product.tabs.length > 0;
 
   const defaultTabs = [
@@ -417,6 +452,42 @@ export default function ProductDetails() {
             )}
           </motion.div>
         </AnimatePresence>
+
+        {/* Specifications Key-Value Table */}
+        {specificationsList.length > 0 && (
+          <div className="bg-white rounded-[28px] p-6 md:p-10 border border-slate-100 shadow-sm mb-16">
+            <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
+              <h3 className="text-2xl font-extrabold text-gray-900 flex items-center gap-3">
+                <Wrench className="w-6 h-6 text-[#0277bd]" /> Technical Specifications
+              </h3>
+              <span className="text-xs font-semibold text-gray-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                {specificationsList.length} Parameters
+              </span>
+            </div>
+
+            <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+              <table className="w-full text-left border-collapse text-sm md:text-base">
+                <tbody>
+                  {specificationsList.map((spec, idx) => (
+                    <tr
+                      key={idx}
+                      className={`${
+                        idx % 2 === 0 ? 'bg-slate-50/70' : 'bg-white'
+                      } border-b border-slate-100 last:border-b-0 hover:bg-blue-50/40 transition-colors`}
+                    >
+                      <td className="py-4 px-6 font-semibold text-gray-700 w-5/12 md:w-4/12 border-r border-slate-100 bg-slate-50/30">
+                        {spec.key}
+                      </td>
+                      <td className="py-4 px-6 text-gray-800 font-medium">
+                        {spec.value}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Action Quote / Contact CTA Bar */}
         <div className="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-md flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
