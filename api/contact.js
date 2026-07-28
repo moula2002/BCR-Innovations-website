@@ -174,7 +174,7 @@ export default async function handler(req, res) {
     // The frontend will see this as a successful request but we return success: false
     return res.status(200).json({
       success: false,
-      error: 'Nodemailer failed to send email. Check GMAIL_PASS app password on Vercel.',
+      error: 'Nodemailer failed to send email. Please ensure you have added GMAIL_USER and GMAIL_PASS environment variables in your Vercel Dashboard.',
       details: error.message,
     });
   }

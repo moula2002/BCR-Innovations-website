@@ -1,18 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Briefcase, 
-  ArrowRight, 
-  MapPin, 
-  Clock, 
-  Building2, 
-  Sparkles, 
-  CheckCircle2, 
-  Send, 
-  X, 
-  FileText, 
-  Users, 
-  Award, 
-  Zap, 
+import {
+  Briefcase,
+  ArrowRight,
+  MapPin,
+  Clock,
+  Building2,
+  Sparkles,
+  CheckCircle2,
+  Send,
+  X,
+  FileText,
+  Users,
+  Award,
+  Zap,
   HeartHandshake,
   Search,
   Check
@@ -83,7 +83,7 @@ export default function Careers() {
   const [loading, setLoading] = useState(true);
   const [selectedDepartment, setSelectedDepartment] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Application Modal state
   const [selectedJob, setSelectedJob] = useState(null);
   const [applyForm, setApplyForm] = useState({
@@ -124,7 +124,7 @@ export default function Careers() {
   const filteredJobs = useMemo(() => {
     return jobs.filter(job => {
       const matchesDept = selectedDepartment === 'All' || job.department === selectedDepartment;
-      const matchesQuery = 
+      const matchesQuery =
         job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         job.department?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         job.location?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -243,11 +243,10 @@ export default function Careers() {
               <button
                 key={dept}
                 onClick={() => setSelectedDepartment(dept)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                  selectedDepartment === dept
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedDepartment === dept
                     ? 'bg-[#0277bd] text-white shadow-md'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
+                  }`}
               >
                 {dept}
               </button>
