@@ -140,11 +140,15 @@ export default function Careers() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          type: 'career',
           firstName: applyForm.name,
           email: applyForm.email,
           phone: applyForm.phone,
+          experience: applyForm.experience,
+          jobTitle: selectedJob?.title || 'General Position',
+          department: selectedJob?.department || 'General',
           subject: `[Job Application] ${selectedJob?.title || 'General Position'}`,
-          message: `Applicant Name: ${applyForm.name}\nTotal Experience: ${applyForm.experience}\nPosition: ${selectedJob?.title}\nDepartment: ${selectedJob?.department}\n\nCover Note / Resume Link:\n${applyForm.note}`
+          message: applyForm.note
         })
       });
     } catch (err) {
