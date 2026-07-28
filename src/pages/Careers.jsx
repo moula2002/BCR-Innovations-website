@@ -135,24 +135,40 @@ export default function Careers() {
   const handleApplySubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    const payload = {
+      name: applyForm.name,
+      email: applyForm.email,
+      phone: applyForm.phone,
+      experience: applyForm.experience,
+      note: applyForm.note,
+      jobTitle: selectedJob?.title || 'General Position',
+      department: selectedJob?.department || 'General',
+      type: 'career'
+    };
+
     try {
-      await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'career',
-          firstName: applyForm.name,
-          email: applyForm.email,
-          phone: applyForm.phone,
-          experience: applyForm.experience,
-          jobTitle: selectedJob?.title || 'General Position',
-          department: selectedJob?.department || 'General',
-          subject: `[Job Application] ${selectedJob?.title || 'General Position'}`,
-          message: applyForm.note
-        })
-      });
-    } catch (err) {
-      console.warn('Vercel mail endpoint fallback:', err);
+      // 1. Try Backend API (/api/careers/apply) via Axios
+      try {
+        await api.post('/careers/apply', payload);
+      } catch (err) {
+        console.warn('Backend API /careers/apply warning, attempting Vercel endpoint:', err);
+      }
+
+      // 2. Try Vercel Serverless Function (/api/contact)
+      try {
+        await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...payload,
+            firstName: applyForm.name,
+            subject: `[Job Application] ${selectedJob?.title || 'General Position'}`,
+            message: applyForm.note
+          })
+        });
+      } catch (err) {
+        console.warn('Vercel serverless mail fallback:', err);
+      }
     } finally {
       setSubmitting(false);
       setSubmitted(true);
