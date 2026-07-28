@@ -132,13 +132,27 @@ export default function Careers() {
     });
   }, [jobs, selectedDepartment, searchQuery]);
 
-  const handleApplySubmit = (e) => {
+  const handleApplySubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setTimeout(() => {
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: applyForm.name,
+          email: applyForm.email,
+          phone: applyForm.phone,
+          subject: `[Job Application] ${selectedJob?.title || 'General Position'}`,
+          message: `Applicant Name: ${applyForm.name}\nTotal Experience: ${applyForm.experience}\nPosition: ${selectedJob?.title}\nDepartment: ${selectedJob?.department}\n\nCover Note / Resume Link:\n${applyForm.note}`
+        })
+      });
+    } catch (err) {
+      console.warn('Vercel mail endpoint fallback:', err);
+    } finally {
       setSubmitting(false);
       setSubmitted(true);
-    }, 1000);
+    }
   };
 
   const closeModal = () => {
