@@ -81,7 +81,7 @@ export default function Contact() {
       <div className="bg-[#0277bd] text-white pt-32 pb-20 px-6 text-center md:pt-40 relative overflow-hidden shadow-md">
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
         <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none transform -translate-y-1/2"></div>
-        
+
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -128,7 +128,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 text-lg">Phone</h4>
-                  <a href="tel:+919844013768" className="text-gray-500 hover:text-[#0277bd] mt-1 text-sm font-medium block transition-colors">+91 98440 13768</a>
+                  <a href="tel:+919844013768" className="text-gray-500 hover:text-[#0277bd] mt-1 text-sm font-medium block transition-colors">+91 91138 23660</a>
                 </div>
               </motion.div>
 
@@ -138,7 +138,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 text-lg">Email</h4>
-                  <a href="mailto:bcrinnovations2026@gmail.com" className="text-gray-500 hover:text-[#0277bd] mt-1 text-sm font-medium block transition-colors break-all">bcrinnovations2026@gmail.com</a>
+                  <a href="mailto:bcrinnovations07@gmail.com" className="text-gray-500 hover:text-[#0277bd] mt-1 text-sm font-medium block transition-colors break-all">bcrinnovations07@gmail.com</a>
                 </div>
               </motion.div>
             </div>
@@ -175,7 +175,7 @@ export default function Contact() {
 
           {/* Selected Product Card Banner */}
           {(productName || productImage) && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-blue-50/90 via-slate-50/90 to-blue-50/40 border-l-4 border-[#0277bd] border-y border-r border-slate-200/60 shadow-sm flex items-center gap-4 relative z-10"
@@ -198,11 +198,11 @@ export default function Contact() {
             </motion.div>
           )}
 
-          <motion.form 
+          <motion.form
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            onSubmit={handleSubmit(onSubmit)} 
+            onSubmit={handleSubmit(onSubmit)}
             className="space-y-5 relative z-10"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

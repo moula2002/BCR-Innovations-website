@@ -37,7 +37,7 @@ export default async function handler(req, res) {
   }
 
   const senderName = `${firstName || ''} ${lastName || ''}`.trim() || 'Applicant / Visitor';
-  const targetEmail = 'bcrinnovations2026@gmail.com';
+  const targetEmail = 'bcrinnovations07@gmail.com';
   const user = process.env.EMAIL_USER || process.env.GMAIL_USER || targetEmail;
   const rawPass = process.env.EMAIL_PASS || process.env.GMAIL_PASS || process.env.SMTP_PASS || '';
   const pass = rawPass.replace(/\s+/g, '');

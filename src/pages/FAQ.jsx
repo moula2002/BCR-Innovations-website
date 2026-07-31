@@ -40,7 +40,7 @@ const faqs = [
   {
     category: 'ordering',
     question: "How can I request a custom quote or place a bulk order?",
-    answer: "You can request a custom quote directly from any Product Details page using the 'Request Quote' button, by filling out our Contact Form, or by emailing our sales team at bcrinnovations2026@gmail.com / calling +91 98440 13768."
+    answer: "You can request a custom quote directly from any Product Details page using the 'Request Quote' button, by filling out our Contact Form, or by emailing our sales team at bcrinnovations07@gmail.com / calling +91 91138 23660."
   },
   {
     category: 'ordering',
@@ -60,7 +60,7 @@ const faqs = [
   {
     category: 'support',
     question: "How can I request technical support or spare parts?",
-    answer: "For technical assistance, spare parts, or routine maintenance, reach out to our customer support team directly at bcrinnovations2026@gmail.com or call +91 98440 13768. We maintain inventory for standard components to ensure fast turnaround."
+    answer: "For technical assistance, spare parts, or routine maintenance, reach out to our customer support team directly at bcrinnovations07@gmail.com or call +91 91138 23660. We maintain inventory for standard components to ensure fast turnaround."
   }
 ];
 
@@ -111,11 +111,10 @@ export default function FAQ() {
                   setActiveCategory(cat.id);
                   setOpenIndex(0);
                 }}
-                className={`px-5 py-2.5 rounded-full text-xs md:text-sm font-semibold transition-all duration-300 cursor-pointer ${
-                  isActive
+                className={`px-5 py-2.5 rounded-full text-xs md:text-sm font-semibold transition-all duration-300 cursor-pointer ${isActive
                     ? 'bg-[#0277bd] text-white shadow-md shadow-blue-600/20 scale-105'
                     : 'bg-white text-gray-600 hover:bg-slate-100 border border-slate-200/80 shadow-xs'
-                }`}
+                  }`}
               >
                 {cat.label}
               </button>
@@ -136,11 +135,10 @@ export default function FAQ() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
                   key={faq.question}
-                  className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
-                    isOpen 
-                      ? 'border-[#0277bd] shadow-lg shadow-blue-500/5 ring-1 ring-[#0277bd]/20' 
+                  className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
+                      ? 'border-[#0277bd] shadow-lg shadow-blue-500/5 ring-1 ring-[#0277bd]/20'
                       : 'border-slate-200/80 shadow-xs hover:border-slate-300'
-                  }`}
+                    }`}
                 >
                   <button
                     className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none gap-4 cursor-pointer"
@@ -188,7 +186,7 @@ export default function FAQ() {
         </div>
 
         {/* Contact Support CTA Box */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

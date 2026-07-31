@@ -50,7 +50,7 @@ export default function Navbar() {
       <span className={`font-black uppercase tracking-wider text-sm transition-colors duration-300 relative z-10 ${location.pathname === link.path ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600'}`}>
         {link.name}
       </span>
-      
+
       {location.pathname === link.path && (
         <motion.div
           layoutId="navbar-indicator"
@@ -58,7 +58,7 @@ export default function Navbar() {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
       )}
-      
+
       {location.pathname !== link.path && (
         <div className="absolute bottom-0 left-1/2 right-1/2 h-1 bg-gray-200 rounded-t-full transition-all duration-300 group-hover:left-0 group-hover:right-0 opacity-0 group-hover:opacity-100"></div>
       )}
@@ -66,7 +66,7 @@ export default function Navbar() {
   );
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
@@ -76,13 +76,13 @@ export default function Navbar() {
       <div className={`bg-primary text-white text-xs transition-all duration-500 overflow-hidden w-full pointer-events-auto ${scrolled ? 'h-0 opacity-0 py-0' : 'h-10 py-2 opacity-100 hidden md:flex items-center'}`}>
         <div className="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
           <div className="flex space-x-6">
-            <a href="mailto:bcrinnovations2026@gmail.com" className="hover:text-secondary transition-colors flex items-center gap-2 group">
-              <Mail className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" /> bcrinnovations2026@gmail.com
+            <a href="mailto:bcrinnovations07@gmail.com" className="hover:text-secondary transition-colors flex items-center gap-2 group">
+              <Mail className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" /> bcrinnovations07@gmail.com
             </a>
           </div>
           <div className="flex space-x-6 items-center">
             <a href="tel:+919844013768" className="hover:text-secondary transition-colors flex items-center gap-2 font-semibold group">
-              <Phone className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" /> +91 98440 13768
+              <Phone className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" /> +91 91138 23660
             </a>
           </div>
         </div>
@@ -93,11 +93,11 @@ export default function Navbar() {
         <nav className={`transition-all duration-500 w-full relative ${scrolled ? 'bg-white/95 backdrop-blur-xl shadow-md border-b border-gray-100' : 'bg-white border-b border-gray-100 shadow-sm'}`}>
           <div className={`mx-auto px-6 md:px-8 flex items-center justify-between transition-all duration-500 ${scrolled ? 'h-16 max-w-7xl' : 'h-20 max-w-7xl'}`}>
             <Link to="/" className="flex items-center gap-3 group">
-              <img 
-                src={logoUrl} 
-                alt="BCR Innovations Logo" 
-                className={`w-auto object-contain origin-left transition-all duration-500 ${scrolled ? 'h-10 scale-110' : 'h-14 scale-[1.35]'}`} 
-                onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }} 
+              <img
+                src={logoUrl}
+                alt="BCR Innovations Logo"
+                className={`w-auto object-contain origin-left transition-all duration-500 ${scrolled ? 'h-10 scale-110' : 'h-14 scale-[1.35]'}`}
+                onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }}
               />
               <span className={`font-bold text-primary hidden lg:block tracking-tight pl-2 transition-all duration-500 ${scrolled ? 'text-xl' : 'text-2xl'}`}>BCR Innovations</span>
             </Link>
@@ -106,13 +106,13 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-8 h-full">
               {renderNavLink({ name: 'Home', path: '/' })}
               {renderNavLink({ name: 'About Us', path: '/about' })}
-              
+
               {/* Products Dropdown */}
               <div className="group h-full flex items-center relative px-2 cursor-pointer">
                 <Link to="/products" className={`font-black uppercase tracking-wider text-sm flex items-center gap-1 transition-colors duration-300 relative z-10 ${location.pathname.includes('/products') ? 'text-blue-600' : 'text-gray-600 group-hover:text-blue-600'}`}>
                   PRODUCTS <ChevronDown className="w-4 h-4 ml-1 opacity-60" />
                 </Link>
-                
+
                 {location.pathname.includes('/products') && (
                   <motion.div layoutId="navbar-indicator" className="absolute bottom-0 left-0 right-0 h-1 bg-secondary rounded-t-full" transition={{ type: "spring", stiffness: 300, damping: 30 }} />
                 )}
@@ -128,8 +128,8 @@ export default function Navbar() {
                       const hasSubs = subs.length > 0;
                       return (
                         <div key={cat.id} className="relative group/sub">
-                          <Link 
-                            to={`/products/category/${encodeURIComponent(cat.id)}`} 
+                          <Link
+                            to={`/products/category/${encodeURIComponent(cat.id)}`}
                             className="px-6 py-3 hover:bg-gray-50 flex items-center justify-between text-gray-700 hover:text-primary transition-colors text-[15px] font-medium"
                           >
                             {cat.name}
@@ -141,9 +141,9 @@ export default function Navbar() {
                             <div className="absolute top-0 left-full pl-1 opacity-0 pointer-events-none group-hover/sub:opacity-100 group-hover/sub:pointer-events-auto transition-all duration-200">
                               <div className="bg-white shadow-xl rounded-xl border border-gray-100 py-3 w-64">
                                 {subs.map(sub => (
-                                  <Link 
-                                    key={sub.id} 
-                                    to={`/products/category/${encodeURIComponent(cat.id)}/subcategory/${encodeURIComponent(sub.id)}`} 
+                                  <Link
+                                    key={sub.id}
+                                    to={`/products/category/${encodeURIComponent(cat.id)}/subcategory/${encodeURIComponent(sub.id)}`}
                                     className="block px-6 py-2.5 hover:bg-gray-50 text-gray-600 hover:text-primary transition-colors text-[14.5px]"
                                   >
                                     {sub.name}
@@ -166,7 +166,7 @@ export default function Navbar() {
 
             <div className="hidden md:flex items-center">
               <Link to="/contact">
-                <motion.button 
+                <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   className="relative overflow-hidden bg-primary text-white px-7 py-2.5 rounded-full font-bold shadow-md hover:shadow-xl transition-shadow group"
@@ -199,17 +199,17 @@ export default function Navbar() {
                 <div className="px-6 py-6 space-y-1">
                   <Link to="/" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">HOME</Link>
                   <Link to="/about" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">ABOUT US</Link>
-                  
+
                   {/* Mobile Products Accordion */}
                   <div>
-                    <button 
+                    <button
                       onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
                       className="w-full flex items-center justify-between px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary"
                     >
                       PRODUCTS
                       <ChevronDown className={`w-4 h-4 transition-transform ${mobileProductsOpen ? 'rotate-180' : ''}`} />
                     </button>
-                    
+
                     <AnimatePresence>
                       {mobileProductsOpen && (
                         <motion.div
@@ -226,26 +226,26 @@ export default function Navbar() {
 
                             return (
                               <div key={cat.id} className="mt-1">
-                                <button 
-                                  onClick={() => hasSubs ? setMobileActiveCategory(isExpanded ? null : cat.id) : (setIsOpen(false), window.location.href=`/products/category/${encodeURIComponent(cat.id)}`)}
+                                <button
+                                  onClick={() => hasSubs ? setMobileActiveCategory(isExpanded ? null : cat.id) : (setIsOpen(false), window.location.href = `/products/category/${encodeURIComponent(cat.id)}`)}
                                   className="w-full flex items-center justify-between px-4 py-2 rounded-lg text-[15px] font-medium text-gray-700 hover:bg-gray-50"
                                 >
                                   {cat.name}
                                   {hasSubs && <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />}
                                 </button>
-                                
+
                                 {hasSubs && isExpanded && (
                                   <div className="pl-4 border-l-2 border-gray-100 ml-4 mt-1 mb-2 space-y-1">
-                                    <Link 
-                                      to={`/products/category/${encodeURIComponent(cat.id)}`} 
+                                    <Link
+                                      to={`/products/category/${encodeURIComponent(cat.id)}`}
                                       onClick={() => setIsOpen(false)}
                                       className="block px-4 py-2 rounded-lg text-[14px] text-gray-500 hover:text-primary hover:bg-primary/5"
                                     >
                                       All {cat.name}
                                     </Link>
                                     {subs.map(sub => (
-                                      <Link 
-                                        key={sub.id} 
+                                      <Link
+                                        key={sub.id}
                                         to={`/products/category/${encodeURIComponent(cat.id)}/subcategory/${encodeURIComponent(sub.id)}`}
                                         onClick={() => setIsOpen(false)}
                                         className="block px-4 py-2 rounded-lg text-[14px] text-gray-500 hover:text-primary hover:bg-primary/5"
@@ -266,10 +266,10 @@ export default function Navbar() {
                   <Link to="/faq" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">FAQ</Link>
                   <Link to="/careers" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">CAREERS</Link>
                   <Link to="/contact" onClick={() => setIsOpen(false)} className="block px-4 py-3 rounded-xl font-black uppercase tracking-widest text-sm text-gray-600 hover:bg-gray-50 hover:text-primary">CONTACT</Link>
-                  
-                  <motion.div 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
+
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
                     className="pt-6 mt-4 border-t border-gray-100"
                   >

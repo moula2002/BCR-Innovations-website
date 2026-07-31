@@ -57,7 +57,7 @@ export default function PrivacyPolicy() {
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-gray-900">5. Contact Us</h2>
             <p className="leading-relaxed">
-              If you have any questions about this privacy policy or our privacy practices, please contact us at <strong>bcrinnovations2026@gmail.com</strong>.
+              If you have any questions about this privacy policy or our privacy practices, please contact us at <strong>bcrinnovations07@gmail.com</strong>.
             </p>
           </section>
         </motion.div>

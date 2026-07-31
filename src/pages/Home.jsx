@@ -5,7 +5,10 @@ import { motion } from 'framer-motion';
 import api from '../services/api';
 import { getImageUrl } from '../utils';
 
-import heroImg from '../assets/images/hero-branded.png';
+import cleanroomImg from '../assets/images/hero-cleanroom.png';
+import sheetmetalImg from '../assets/images/hero-sheetmetal.png';
+import refrigerationImg from '../assets/images/hero-refrigeration.png';
+import furnitureImg from '../assets/images/hero-furniture.png';
 import facilityImg from '../assets/images/facility-man.png';
 
 export default function Home() {
@@ -50,20 +53,53 @@ export default function Home() {
     <div className="min-h-screen bg-white selection:bg-secondary selection:text-white overflow-hidden">
 
       {/* Hero Section */}
-      <section className="relative h-[90vh] min-h-[600px] overflow-hidden flex items-center">
-        <div className="absolute inset-0 z-0">
-          <motion.img
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 15, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
-            src={heroImg}
-            alt="Hero Background"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+      <section className="relative h-[70vh] min-h-[500px] mt-16 md:mt-[120px] overflow-hidden flex items-center">
+        <div className="absolute inset-0 z-0 grid grid-cols-2 grid-rows-2 gap-1 bg-gray-950">
+          {/* Quadrant 1: Cleanroom Systems */}
+          <div className="relative overflow-hidden group w-full h-full">
+            <img
+              src={cleanroomImg}
+              alt="Cleanroom Systems"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500"></div>
+          </div>
+
+          {/* Quadrant 2: Sheet Metal */}
+          <div className="relative overflow-hidden group w-full h-full">
+            <img
+              src={sheetmetalImg}
+              alt="Sheet Metal Fabrication"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500"></div>
+          </div>
+
+          {/* Quadrant 3: Refrigeration & Kitchen */}
+          <div className="relative overflow-hidden group w-full h-full">
+            <img
+              src={refrigerationImg}
+              alt="Refrigeration & Kitchen Equipment"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500"></div>
+          </div>
+
+          {/* Quadrant 4: Modular Furniture */}
+          <div className="relative overflow-hidden group w-full h-full">
+            <img
+              src={furnitureImg}
+              alt="Modular Furniture"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-500"></div>
+          </div>
+
+          {/* Overall Dark Overlay for Main Heading Readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent pointer-events-none z-10"></div>
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full mt-52 md:mt-64">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full mt-0">
           <motion.div
             initial="hidden"
             animate="visible"

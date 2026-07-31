@@ -671,9 +671,9 @@ export default function ProductDetails() {
             Write to us now
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 mb-8 text-white font-medium text-sm md:text-base">
-            <a href="mailto:bcrinnovations2026@gmail.com" className="flex items-center gap-2 hover:text-white/80 transition-colors">
+            <a href="mailto:bcrinnovations07@gmail.com" className="flex items-center gap-2 hover:text-white/80 transition-colors">
               <Mail className="w-5 h-5 text-white/90" />
-              <span>bcrinnovations2026@gmail.com</span>
+              <span>bcrinnovations07@gmail.com</span>
             </a>
             <a href="mailto:sales@bcrinnovations.com" className="flex items-center gap-2 hover:text-white/80 transition-colors">
               <Mail className="w-5 h-5 text-white/90" />
