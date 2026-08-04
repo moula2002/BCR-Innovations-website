@@ -24,12 +24,31 @@ export default function Navbar() {
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
+        const cachedCats = sessionStorage.getItem('navCategories');
+        const cachedSubs = sessionStorage.getItem('navSubcategories');
+
+        if (cachedCats && cachedSubs) {
+          setCategories(JSON.parse(cachedCats));
+          setSubcategories(JSON.parse(cachedSubs));
+          
+          // Background fetch to ensure data is up to date
+          Promise.all([api.get('/categories'), api.get('/subcategories')]).then(([catRes, subRes]) => {
+            setCategories(catRes.data.data || []);
+            setSubcategories(subRes.data.data || []);
+            sessionStorage.setItem('navCategories', JSON.stringify(catRes.data.data || []));
+            sessionStorage.setItem('navSubcategories', JSON.stringify(subRes.data.data || []));
+          }).catch(err => console.error("Background fetch failed", err));
+          return;
+        }
+
         const [catRes, subRes] = await Promise.all([
           api.get('/categories'),
           api.get('/subcategories')
         ]);
         setCategories(catRes.data.data || []);
         setSubcategories(subRes.data.data || []);
+        sessionStorage.setItem('navCategories', JSON.stringify(catRes.data.data || []));
+        sessionStorage.setItem('navSubcategories', JSON.stringify(subRes.data.data || []));
       } catch (err) {
         console.error("Failed to load nav dropdown data", err);
       }
